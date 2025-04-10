@@ -7,7 +7,12 @@
     "features": {
            "ghcr.io/devcontainers/features/docker-in-docker:2": {},
            "ghcr.io/devcontainers/features/python:1": {},
-           "ghcr.io/rocker-org/devcontainer-features/rstudio-server:0": {},
+           "ghcr.io/rocker-org/devcontainer-features/rstudio-server:0": {
+                "rstudio-server-config": {
+                    "www-port": "8787",
+                    "www-address": "0.0.0.0"
+                }
+           },
            "ghcr.io/robsyme/features/nextflow:1": {}
     },
     
@@ -15,7 +20,9 @@
     // "features": {},
     
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    "forwardPorts": [8787]
+    "forwardPorts": [8787],
+    "remoteUser": "vscode",
+    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev"
     
     // Configure tool-specific properties.
     // "customizations": {},

@@ -54,6 +54,6 @@ course_information/Timing
 :hidden:
 :caption: A topic
 
-course_contents/article_topic
+course_contents/Contents
 ```
 

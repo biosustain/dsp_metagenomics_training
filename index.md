@@ -42,6 +42,16 @@ about
 ```{toctree}
 :maxdepth: 2
 :hidden:
+:caption: Course information
+
+course_information/Instructions
+course_information/Location
+course_information/Timing
+```
+
+```{toctree}
+:maxdepth: 2
+:hidden:
 :caption: A topic
 
 course_contents/article_topic

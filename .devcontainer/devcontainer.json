@@ -1,28 +1,40 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/debian
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-    "name": "RStudio in Codespaces",
+    "name": "Ubuntu",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "image": "mcr.microsoft.com/devcontainers/base:noble",
     "features": {
-           "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-           "ghcr.io/devcontainers/features/python:1": {},
-           "ghcr.io/rocker-org/devcontainer-features/rstudio-server:0": {},
-           "ghcr.io/robsyme/features/nextflow:1": {}
+      "ghcr.io/devcontainers/features/docker-in-docker:2": {
+        "moby": true,
+        "azureDnsAutoDetection": true,
+        "installDockerBuildx": true,
+        "installDockerComposeSwitch": true,
+        "version": "latest",
+        "dockerDashComposeVersion": "v2"
+      },
+      "ghcr.io/devcontainers/features/python:1": {
+        "installTools": true,
+        "version": "os-provided"
+      },
+      "ghcr.io/rocker-org/devcontainer-features/rstudio-server:0": {
+      "singleUser": true,
+      "version": "stable"
+      },
+      "ghcr.io/robsyme/features/nextflow:1": {}
     },
     
-    // Features to add to the dev container. More info: https://containers.dev/features.
-    // "features": {},
+    "postAttachCommand": {
+      "rstudio-start": "rserver"
+    },
     
-    // Use 'forwardPorts' to make a list of ports inside the container available locally.
     "forwardPorts": [8787],
-    "remoteUser": "vscode",
-    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev"
     
-    // Configure tool-specific properties.
-    // "customizations": {},
-    
-    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-    // "remoteUser": "root"
+    "portsAttributes": {
+      "8787": {
+        "label": "RStudio IDE"
+      }
+    }
+
 }
      

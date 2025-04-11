@@ -52,7 +52,7 @@ course_information/Timing
 ```{toctree}
 :maxdepth: 2
 :hidden:
-:caption: A topic
+:caption: Course contents
 
 course_contents/Contents
 ```

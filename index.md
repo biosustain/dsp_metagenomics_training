@@ -1,4 +1,4 @@
-## Metagenomics
+# Metagenomics
 
 Metagenomics is transforming biotechnology by allowing us to study entire microbial communities directly from environmental samples without the need of culturing bacteria. This powerful approach provides insights into microbial diversity, taxonomical composition, microbial functions, and microbial associations. 
  

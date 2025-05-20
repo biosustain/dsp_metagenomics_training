@@ -1,0 +1,189 @@
+---
+title: "Beta diversity - PCoA"
+author: "YOUR NAME HERE"
+date: "`r format(Sys.time())`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: show
+    df_print: paged
+params:
+  markdown_id: "Beta-diversity-PCoA"
+  show_x_labels: TRUE
+  dist_method: "bray" 
+  data: "../data/species_table.tsv"
+  groups: "../data/Groups.tsv"
+  data_title: "Relative species abundance"
+editor_options: 
+  chunk_output_type: console
+---
+
+This markdown is to calculate Bray-Curtis dissimilarities between samples based on species abundance and to plot these ones on the two first axis of a principal coordinate analysis (PCoA).
+
+# R Packages that need to be installed
+```{r packages, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidylog, warn.conflicts = FALSE) # tidylog should be loaded after dplyr and tidyr and conflicts should be silenced since it (purposely) builds on top of those packages
+library(ggplot2)
+library(vegan)
+library(readxl)
+library(plotly)
+```
+
+# Load data objects
+
+## Load species abundance and grouping file
+```{r}
+# Abundance table
+data <- read.table(params$data, header = T, sep = '\t', quote = "")
+dim(data)
+
+# Grouping table
+groups <- read.table(params$groups, header = T, sep = '\t', quote = "")
+dim(groups)
+
+# Take only samples with sequencing and metadata information
+data <- data[rownames(data) %in% groups$Samples,]
+dim(data)
+```
+
+# Creating a directory for the PCoA related results
+```{r}
+results_dir <- "../results/report/Beta-diversity"
+
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+
+```
+
+# Building the Principal coordinates analysis (PCoA)
+```{r, results='asis'}
+##### PCoA with loadings
+## Step 1: Calculate Bray-Curtis Dissimilarity Matrix
+# Compute Bray-Curtis dissimilarity matrix
+bray_curtis <- vegdist(data, method = params$dist_method)
+
+## Step 2: Perform PCoA
+# Perform PCoA
+pcoa_result <- cmdscale(bray_curtis, eig = TRUE, k = 2)
+
+# Extract eigenvalues and points
+#pcoa_result2 <- cmdscale(bray_curtis, eig = TRUE, k = nrow(data) - 1)
+eig_vals <- pcoa_result$eig
+# Only positive eigenvalues contribute to variance explained
+eig_vals <- eig_vals[eig_vals > 0]
+var_explained <- eig_vals / sum(eig_vals)
+axis_variance <- round(var_explained[1:2] * 100)
+
+scores <- as.data.frame(pcoa_result$points)
+scores$Group <- groups$Groups
+colnames(scores) <- c("Axis1", "Axis2", "Group")
+
+## Step 3: Perform PCoA
+#To calculate variable loadings (contributions of the original variables to the PCoA axes), you can use the envfit() function in the vegan package.
+# Fit environmental vectors to the ordination
+loadings <- envfit(pcoa_result, data, perm = 999)
+
+# Extract loading data
+loadings_df <- as.data.frame(loadings$vectors$arrows[loadings$vectors$r >= 0.50 & loadings$vectors$pvals <= 0.05,])
+colnames(loadings_df) <- c("Axis1", "Axis2")
+
+## Step 4: Plot the PCoA with Loadings
+# Plot PCoA results
+colors = c("#989994", "#1779E3")
+
+p <- ggplot(scores, aes(x = Axis1, y = Axis2)) +
+  geom_point(aes(color = Group), size = 2) +
+  geom_segment(data = loadings_df, 
+               aes(x = 0, y = 0, xend = Axis1, yend = Axis2),
+               arrow = arrow(length = unit(0.1, "cm")), color = "grey", 
+               size = 0.5) +
+  geom_text(data = loadings_df, 
+            aes(x = Axis1, y = Axis2, label = rownames(loadings_df)),
+            vjust = -0.5, 
+            hjust = 0.5, 
+            color = "red",
+            position = "jitter",
+            size = 2) +
+  scale_color_manual(values = colors) +
+  theme(aspect.ratio = 1) +
+  theme_minimal() +
+  labs(x = paste0("Axis1 ", axis_variance[1], "%"), 
+       y = paste0("Axis2 ", axis_variance[2], "%"), 
+       title = "PCoA with variable loadings", 
+       subtitle = "r >= 0.50, P <= 0.05") # this is hardcoded for now, not ideal!
+  
+p
+
+# Save it as a pdf
+ggsave("../results/report/Beta-diversity/PCoA_plot.pdf", width = 8, height = 6)
+
+# Let's make it an interactive plot with the ggplotly library
+plotly_p <- ggplotly(p)
+plotly_p
+
+# Save as an interactive HTML file
+library(htmlwidgets)
+saveWidget(as_widget(plotly_p), "../results/report/Beta-diversity/PCoA_plot.html")
+```
+
+# Permutational multivariate analysis of variance (PERMANOVA)
+## Distance to centroid (dispersion)
+
+```{r}
+
+dispersion <- betadisper(d = bray_curtis, group = groups$Groups, type = "centroid", bias.adjust = F)
+dispersion_table <- permutest(dispersion, permutations = how(nperm = 1000), by = "margin")
+
+dispersion_table
+```
+
+## Dispersion boxplots
+
+```{r}
+
+dispersion_plot_data <- data.frame("distance" = dispersion$distances,
+                                   "group" = dispersion$group)
+
+dispersion_box <- ggplot(dispersion_plot_data, aes(x = group, y = distance)) +
+  geom_boxplot(aes(fill = group), outliers = F, alpha = 0.7) +
+  geom_point(aes(fill = group), shape = 21, 
+             position = position_jitter(width = 0.25, height = 0)) +
+  theme_minimal() +
+  scale_fill_manual(values = colors) +
+  labs(title = "Dispersion (Group variability)", x = "Group", y = "Distance to centroid")
+  
+dispersion_box
+
+ggsave("../results/report/Beta-diversity/dispersion_plot.pdf", width = 5, height = 4)
+```
+
+# PERMANOVA test (cannot run for phylogenetic distance metrics)
+
+```{r}
+# Differences among treatment groups
+set.seed(12)
+
+# # TODO: complain if not at least color group OR shape group is given
+# With all data
+independent_variables <- c("Groups")
+ 
+form <- paste0("bray_curtis ~", independent_variables) %>% as.formula
+form
+
+adonis_table <- adonis2(form, 
+                        data = groups,
+                        permutations = 1000,
+                        by = "margin")
+
+adonis_table
+
+```
+
+# Printing all package versions (good practice to ensure reproducibility)
+```{r session-info, echo=FALSE}
+# Print R version and loaded packages
+sessionInfo()
+```
+

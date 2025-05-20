@@ -1,0 +1,139 @@
+---
+title: "Alpha diversity"
+author: "YOUR NAME HERE"
+date: "`r format(Sys.time())`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: show
+    df_print: paged
+params:
+  markdown_id: "Alpha diversity"
+  data: "../data/species_table.tsv"
+  groups: "../data/Groups.tsv"
+  data_title: "Relative species abundance"
+  do_paired_test: FALSE
+  id_variable: NULL
+editor_options: 
+  chunk_output_type: console
+---
+
+This markdown is to calculate the alpha diversity of the samples as richness (number of species detected per sample) and as Shannon diversity index (accounts for number of species detected and the evenness of their abundance). These calculations are based on the species abundance. Here we will plot richness and Shannon index and we will compare between the study groups.
+
+
+### Packages
+```{r packages, message=FALSE, warning=FALSE}
+
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(glue)
+library(magrittr)
+library(patchwork)
+#library(picante)
+library(scales)
+library(stringr)
+library(tibble)
+library(usethis)
+library(vegan)
+library(tidylog, warn.conflicts = FALSE) # tidylog should be loaded after dplyr and tidyr and conflicts should be silenced since it (purposely) builds on top of those packages
+```
+
+# Load data objects
+
+## Load species abundance and grouping file
+```{r}
+# Abundance table
+data <- read.table(params$data, header = T, sep = '\t', quote = "")
+dim(data)
+
+# Grouping table
+groups <- read.table(params$groups, header = T, sep = '\t', quote = "")
+dim(groups)
+
+# Take only samples with sequencing and metadata information
+data <- data[rownames(data) %in% groups$Samples,]
+dim(data)
+```
+
+## Creating a directory for the PCoA related results
+```{r}
+results_dir <- "../results/report/Alpha-diversity"
+
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+
+```
+
+# Calculate richness and shannon
+```{r}
+# We calculate richness and Shannon index using vegan package and added both to a dataframe
+alphaDiv <- data.frame(
+  Richness = rowSums(data > 0),
+  Shannon = vegan::diversity(data, index = "shannon"),
+  row.names = rownames(data))
+```
+
+# Plot alpha diversity measurements
+## Prepare plot dataframe
+```{r}
+# We join the alpha diversity data with the grouping file (often called metadata)
+plot_data <- cbind(alphaDiv, groups$Groups)
+str(plot_data)
+head(plot_data)
+colnames(plot_data) <- c("Richness", "Shannon", "Groups")
+
+write.table(plot_data, file = "../results/report/Alpha-diversity/Alpha_diversity.xlsx", row.names = T, col.names = T, sep = "\t", quote = F)
+```
+
+## Create boxplots 
+```{r}
+
+# if (params$do_paired_test) {
+#   # Filter only to the items that are paired
+#   ids_to_save <- plot_data %>% 
+#     group_by(!!sym(params$id_variable)) %>% 
+#     summarise(n = n()) %>% 
+#     filter(n == 2) %>% 
+#     pull(!!sym(params$id_variable))
+#   
+#   plot_data %<>% filter(!!sym(params$id_variable) %in% ids_to_save) 
+#}
+
+colors = c("#989994", "#1779E3")
+
+richness_boxplot <- ggplot(plot_data, aes(x = Groups, y = Richness)) +
+  geom_boxplot(aes(fill = Groups), outliers = F, alpha = 0.7) +
+  geom_point(aes(fill = Groups), shape = 21, 
+             position = position_jitter(width = 0.25, height = 0)) +
+  theme_bw() +
+  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = colors) +
+  labs(x = "Group", y = "Richness (species detected)")
+
+shannon_boxplot <- ggplot(plot_data, aes(x = Groups, y = Shannon)) +
+  geom_boxplot(aes(fill = Groups), outliers = F, alpha = 0.7) +
+  geom_point(aes(fill = Groups), shape = 21, 
+             position = position_jitter(width = 0.25, height = 0)) +
+  theme_bw() +
+  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = colors) +
+  labs(x = "Group", y = "Shannon index")
+
+richness_boxplot + shannon_boxplot
+
+ggsave(filename = "../results/report/Alpha-diversity/alphadiv_boxplots.pdf", width = 8, height = 4)
+```
+
+# Statistical comparison
+```{r}
+wilcox.test(Richness ~ Groups, plot_data)
+wilcox.test(Shannon ~ Groups, plot_data)
+```
+
+# Printing all package versions (good practice to ensure reproducibility)
+```{r session-info, echo=FALSE}
+# Print R version and loaded packages
+sessionInfo()
+```

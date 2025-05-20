@@ -36,7 +36,6 @@ availble for the command line tool vuegen with the following command:
 ```
 vuegen -h
 ```
-
 Create and start the streamlit app with the following command:
 
 ```bash

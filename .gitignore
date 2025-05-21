@@ -3,3 +3,6 @@ _build
 .DS_Store
 # Ignore results folder
 results/
+# Ignore R environment and history
+RMarkdowns/.RData
+RMarkdowns/.Rhistory

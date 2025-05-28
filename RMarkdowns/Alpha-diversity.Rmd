@@ -11,8 +11,8 @@ output:
     df_print: paged
 params:
   markdown_id: "Alpha diversity"
-  data: "../data/species_table.tsv"
-  groups: "../data/Groups.tsv"
+  data: "data/species_table.tsv"
+  groups: "data/Groups.tsv"
   data_title: "Relative species abundance"
   do_paired_test: FALSE
   id_variable: NULL
@@ -26,19 +26,20 @@ This markdown is to calculate the alpha diversity of the samples as richness (nu
 ### Packages
 ```{r packages, message=FALSE, warning=FALSE}
 
-library(cowplot)
-library(dplyr)
+#library(cowplot)
+#library(dplyr)
 library(ggplot2)
-library(glue)
-library(magrittr)
+#library(glue)
+#library(magrittr)
 library(patchwork)
 #library(picante)
-library(scales)
-library(stringr)
-library(tibble)
-library(usethis)
+#library(scales)
+#library(stringr)
+#library(tibble)
+#library(usethis)
 library(vegan)
-library(tidylog, warn.conflicts = FALSE) # tidylog should be loaded after dplyr and tidyr and conflicts should be silenced since it (purposely) builds on top of those packages
+library(FSA)
+#library(tidylog, warn.conflicts = FALSE) # tidylog should be loaded after dplyr and tidyr and conflicts should be silenced since it (purposely) builds on top of those packages
 ```
 
 # Load data objects
@@ -46,21 +47,27 @@ library(tidylog, warn.conflicts = FALSE) # tidylog should be loaded after dplyr 
 ## Load species abundance and grouping file
 ```{r}
 # Abundance table
-data <- read.table(params$data, header = T, sep = '\t', quote = "")
-dim(data)
+abundance <- readRDS(file="data/MetaphlanAbundance_Species.rds")
+rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
+dim(abundance)
 
-# Grouping table
-groups <- read.table(params$groups, header = T, sep = '\t', quote = "")
-dim(groups)
+# Taxonomical annotation
+annotation <- readRDS(file="data/MetaphlanAnnotations_Species.rds")
+dim(annotation)
+
+# Metadata
+metadata <- read.table(file="data/metadata.tsv", header = T, sep = '\t', quote = "", row.names=NULL)
+rownames(metadata) <- metadata$Sample
+dim(metadata)
 
 # Take only samples with sequencing and metadata information
-data <- data[rownames(data) %in% groups$Samples,]
-dim(data)
+abundance <- abundance[rownames(abundance) %in% rownames(metadata),]
+dim(abundance)
 ```
 
 ## Creating a directory for the PCoA related results
 ```{r}
-results_dir <- "../results/report/Alpha-diversity"
+results_dir <- "results/report/01_Alpha-diversity"
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -70,66 +77,74 @@ dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```{r}
 # We calculate richness and Shannon index using vegan package and added both to a dataframe
 alphaDiv <- data.frame(
-  Richness = rowSums(data > 0),
-  Shannon = vegan::diversity(data, index = "shannon"),
-  row.names = rownames(data))
+  Richness = rowSums(abundance > 0),
+  Shannon = vegan::diversity(abundance, index = "shannon"),
+  row.names = rownames(abundance))
 ```
 
 # Plot alpha diversity measurements
 ## Prepare plot dataframe
 ```{r}
 # We join the alpha diversity data with the grouping file (often called metadata)
-plot_data <- cbind(alphaDiv, groups$Groups)
+plot_data <- cbind(alphaDiv, metadata$Area, metadata$Sampling, 
+paste(metadata$Area, metadata$Sampling, sep="_"))
 str(plot_data)
 head(plot_data)
-colnames(plot_data) <- c("Richness", "Shannon", "Groups")
+colnames(plot_data) <- c("Richness", "Shannon", "Area", "Sampling_Date", "Area_Sampling")
 
-write.table(plot_data, file = "../results/report/Alpha-diversity/Alpha_diversity.xlsx", row.names = T, col.names = T, sep = "\t", quote = F)
+write.table(plot_data, file = "results/report/01_Alpha-diversity/01_Alpha_diversity.xlsx", row.names = T, col.names = T, sep = "\t", quote = F)
 ```
 
 ## Create boxplots 
-```{r}
+```{r, fig.width= 8, fig.height= 4}
 
-# if (params$do_paired_test) {
-#   # Filter only to the items that are paired
-#   ids_to_save <- plot_data %>% 
-#     group_by(!!sym(params$id_variable)) %>% 
-#     summarise(n = n()) %>% 
-#     filter(n == 2) %>% 
-#     pull(!!sym(params$id_variable))
-#   
-#   plot_data %<>% filter(!!sym(params$id_variable) %in% ids_to_save) 
-#}
+colors = c("1_M2" = "#349F2C", "1_M3" = "#BAE4B3",  
+  "2_M2" = "#0F5096", "2_M3" = "#1779E3", 
+  "3_M2" = "#CA0020", "3_M3" = "#FF8784")
 
-colors = c("#989994", "#1779E3")
+richness_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Richness)) +
+  geom_boxplot(aes(fill = Area_Sampling), outliers = F, alpha = 0.7) +
+  geom_point(aes(fill = Area_Sampling), shape = 21, 
+             position = position_jitter(width = 0.25, height = 0)) +
+  theme_bw() +
+  theme(legend.position = "none", panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = colors) +
+  labs(x = "Sampling", y = "Richness (species detected)") +
+  facet_grid(.~Area)
 
-richness_boxplot <- ggplot(plot_data, aes(x = Groups, y = Richness)) +
-  geom_boxplot(aes(fill = Groups), outliers = F, alpha = 0.7) +
-  geom_point(aes(fill = Groups), shape = 21, 
+shannon_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Shannon)) +
+  geom_boxplot(aes(fill = Area_Sampling), outliers = F, alpha = 0.7) +
+  geom_point(aes(fill = Area_Sampling), shape = 21, 
              position = position_jitter(width = 0.25, height = 0)) +
   theme_bw() +
   theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   scale_fill_manual(values = colors) +
-  labs(x = "Group", y = "Richness (species detected)")
-
-shannon_boxplot <- ggplot(plot_data, aes(x = Groups, y = Shannon)) +
-  geom_boxplot(aes(fill = Groups), outliers = F, alpha = 0.7) +
-  geom_point(aes(fill = Groups), shape = 21, 
-             position = position_jitter(width = 0.25, height = 0)) +
-  theme_bw() +
-  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  scale_fill_manual(values = colors) +
-  labs(x = "Group", y = "Shannon index")
+  labs(x = "Sampling", y = "Shannon index") +
+  facet_grid(.~Area)
 
 richness_boxplot + shannon_boxplot
 
-ggsave(filename = "../results/report/Alpha-diversity/alphadiv_boxplots.pdf", width = 8, height = 4)
+ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.pdf", width = 8, height = 4)
 ```
 
 # Statistical comparison
 ```{r}
-wilcox.test(Richness ~ Groups, plot_data)
-wilcox.test(Shannon ~ Groups, plot_data)
+# We have three areas that we want to compare, we will use a non-parametric test for more than 2 groups: Kruskal-Wallis.
+# We are testing whether there are differences between groups
+kruskal.test(Richness ~ Area, plot_data)
+
+# When a Kruskal-Wallis test shows that there are significant differences between groups, 
+# you need a post-hoc test to determine which specific groups differ. 
+#Since Kruskal-Wallis is non-parametric, the appropriate post-hoc test is also non-parametric.
+
+# Perform post-hoc Dunn's test
+dunnTest(Richness ~ Area, plot_data, method = "bh")
+
+# Same for Shannon 
+kruskal.test(Shannon ~ Area, plot_data)
+# Not significant, so not needed but lets double check:
+dunnTest(Shannon ~ Area, plot_data, method = "bh")
 ```
 
 # Printing all package versions (good practice to ensure reproducibility)

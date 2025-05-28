@@ -3,6 +3,8 @@ _build
 .DS_Store
 # Ignore results folder
 results/
+# Ignore some temporary files
+course_contents/~$IntroMetagenomics.pptx
 # Ignore R environment and history
 RMarkdowns/.RData
 RMarkdowns/.Rhistory

@@ -9,13 +9,6 @@ output:
     toc_float: true
     code_folding: show
     df_print: paged
-params:
-  markdown_id: "Beta-diversity-PCoA"
-  show_x_labels: TRUE
-  dist_method: "bray" 
-  data: "../data/species_table.tsv"
-  groups: "../data/Groups.tsv"
-  data_title: "Relative species abundance"
 editor_options: 
   chunk_output_type: console
 ---
@@ -34,42 +27,49 @@ library(plotly)
 
 # Load data objects
 
-## Load species abundance and grouping file
+## Load species abundance, taxonomical annotation and metadata file
 ```{r}
 # Abundance table
-data <- read.table(params$data, header = T, sep = '\t', quote = "")
-dim(data)
+abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
+rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
+dim(abundance)
 
-# Grouping table
-groups <- read.table(params$groups, header = T, sep = '\t', quote = "")
-dim(groups)
+# Taxonomical annotation
+annotation <- readRDS(file = "data/MetaphlanAnnotations_Species.rds")
+dim(annotation)
+
+# Metadata
+metadata <- read.table(file = "data/metadata.tsv",
+                       header = TRUE, sep = "\t",
+                       quote = "",
+                       row.names = NULL)
+rownames(metadata) <- metadata$Sample
+dim(metadata)
 
 # Take only samples with sequencing and metadata information
-data <- data[rownames(data) %in% groups$Samples,]
-dim(data)
+abundance <- abundance[rownames(abundance) %in% rownames(metadata),]
+dim(abundance)
 ```
 
 # Creating a directory for the PCoA related results
 ```{r}
-results_dir <- "../results/report/Beta-diversity"
+results_dir <- "results/report/02_Beta-diversity"
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
-
 ```
 
-# Building the Principal coordinates analysis (PCoA)
-```{r, results='asis'}
+# Plotting a Principal coordinates analysis (PCoA)
+```{r, fig.width = 8, fig.height = 6}
 ##### PCoA with loadings
 ## Step 1: Calculate Bray-Curtis Dissimilarity Matrix
 # Compute Bray-Curtis dissimilarity matrix
-bray_curtis <- vegdist(data, method = params$dist_method)
+bray_curtis <- vegdist(abundance, method = "bray")
 
 ## Step 2: Perform PCoA
 # Perform PCoA
 pcoa_result <- cmdscale(bray_curtis, eig = TRUE, k = 2)
 
 # Extract eigenvalues and points
-#pcoa_result2 <- cmdscale(bray_curtis, eig = TRUE, k = nrow(data) - 1)
 eig_vals <- pcoa_result$eig
 # Only positive eigenvalues contribute to variance explained
 eig_vals <- eig_vals[eig_vals > 0]
@@ -77,64 +77,98 @@ var_explained <- eig_vals / sum(eig_vals)
 axis_variance <- round(var_explained[1:2] * 100)
 
 scores <- as.data.frame(pcoa_result$points)
-scores$Group <- groups$Groups
-colnames(scores) <- c("Axis1", "Axis2", "Group")
+scores$Area <- metadata$Area
+scores$Sampling <- metadata$Sampling
+colnames(scores) <- c("Axis1", "Axis2", "Area", "Sampling")
 
-## Step 3: Perform PCoA
-#To calculate variable loadings (contributions of the original variables to the PCoA axes), you can use the envfit() function in the vegan package.
+## Step 3: Extract loading data
+# To calculate variable loadings (contributions of the original variables to the PCoA axes), 
+# you can use the envfit() function in the vegan package.
 # Fit environmental vectors to the ordination
-loadings <- envfit(pcoa_result, data, perm = 999)
+loadings <- envfit(pcoa_result, abundance, perm = 999)
 
-# Extract loading data
-loadings_df <- as.data.frame(loadings$vectors$arrows[loadings$vectors$r >= 0.50 & loadings$vectors$pvals <= 0.05,])
+loadings_df <- as.data.frame(loadings$vectors$arrows[loadings$vectors$r >= 0.75 & 
+            loadings$vectors$pvals <= 0.05,])
 colnames(loadings_df) <- c("Axis1", "Axis2")
 
-## Step 4: Plot the PCoA with Loadings
-# Plot PCoA results
-colors = c("#989994", "#1779E3")
+# Step 4: Plot PCoA results
+colors <- c("1" = "#349F2C",
+            "2" = "#0F5096",
+            "3" = "#CA0020")
+scores$Area <- as.factor(scores$Area) # as a factor
+
+shapes <- c("M2" = 21,
+            "M3" = 17)
+scores$Sampling <- as.factor(scores$Sampling) # as a factor
 
 p <- ggplot(scores, aes(x = Axis1, y = Axis2)) +
-  geom_point(aes(color = Group), size = 2) +
-  geom_segment(data = loadings_df, 
-               aes(x = 0, y = 0, xend = Axis1, yend = Axis2),
-               arrow = arrow(length = unit(0.1, "cm")), color = "grey", 
-               size = 0.5) +
-  geom_text(data = loadings_df, 
-            aes(x = Axis1, y = Axis2, label = rownames(loadings_df)),
-            vjust = -0.5, 
-            hjust = 0.5, 
-            color = "red",
-            position = "jitter",
-            size = 2) +
+  geom_point(aes(color = Area, fill = Area, shape = Sampling), size = 3) +
   scale_color_manual(values = colors) +
+  scale_fill_manual(values = colors) +
+  scale_shape_manual(values = shapes) +
   theme(aspect.ratio = 1) +
   theme_minimal() +
-  labs(x = paste0("Axis1 ", axis_variance[1], "%"), 
-       y = paste0("Axis2 ", axis_variance[2], "%"), 
-       title = "PCoA with variable loadings", 
-       subtitle = "r >= 0.50, P <= 0.05") # this is hardcoded for now, not ideal!
-  
+  labs(x = paste0("Axis1 ", axis_variance[1], "%"),
+       y = paste0("Axis2 ", axis_variance[2], "%"),
+       title = "PCoA plot")
 p
 
 # Save it as a pdf
-ggsave("../results/report/Beta-diversity/PCoA_plot.pdf", width = 8, height = 6)
+ggsave("results/report/02_Beta-diversity/01_PCoA_plot.pdf",
+       width = 8, height = 6)
 
-# Let's make it an interactive plot with the ggplotly library
+## Step 5: Plot the PCoA with Loadings (optional)
+p <- ggplot(scores, aes(x = Axis1, y = Axis2)) +
+  geom_point(aes(color = Area, fill = Area, shape = Sampling), size = 2) +
+  geom_segment(data = loadings_df,
+               aes(x = 0, y = 0, xend = Axis1, yend = Axis2),
+               arrow = arrow(length = unit(0.1, "cm")), color = "grey",
+               size = 0.5) +
+  geom_text(data = loadings_df, aes(x = Axis1, y = Axis2,
+            label = annotation$species[match(rownames(loadings_df),
+            rownames(annotation))]),
+            vjust = -0.5,
+            hjust = 0.5,
+            color = "red",
+            position = "jitter",
+            size = 3) +
+  scale_color_manual(values = colors) +
+  scale_fill_manual(values = colors) +
+  scale_shape_manual(values = shapes) +
+  theme(aspect.ratio = 1) +
+  theme_minimal() +
+  labs(x = paste0("Axis1 ", axis_variance[1], "%"),
+       y = paste0("Axis2 ", axis_variance[2], "%"),
+       title = "PCoA with variable loadings",
+       subtitle = "r >= 0.75, P <= 0.05")
+p
+
+# Save it as a pdf
+ggsave("results/report/02_Beta-diversity/02_PCoA_with_loadings.pdf",
+       width = 8, height = 6)
+
+# Let's make it an interactive plot with the ggplotly library (optional)
 plotly_p <- ggplotly(p)
 plotly_p
 
-# Save as an interactive HTML file
-library(htmlwidgets)
-saveWidget(as_widget(plotly_p), "../results/report/Beta-diversity/PCoA_plot.html")
+# Convert to JSON and save
+json_str <- plotly_json(plotly_p, jsonedit = FALSE)
+cat(json_str,
+    file = "results/report/02_Beta-diversity/03_PCoA_plot_interactive.json")
 ```
 
 # Permutational multivariate analysis of variance (PERMANOVA)
-## Distance to centroid (dispersion)
 
+## Distance to centroid (dispersion)
 ```{r}
 
-dispersion <- betadisper(d = bray_curtis, group = groups$Groups, type = "centroid", bias.adjust = F)
-dispersion_table <- permutest(dispersion, permutations = how(nperm = 1000), by = "margin")
+dispersion <- betadisper(d = bray_curtis,
+                         group = groups$Groups,
+                         type = "centroid",
+                         bias.adjust = FALSE)
+dispersion_table <- permutest(dispersion,
+                              permutations = how(nperm = 1000),
+                              by = "margin")
 
 dispersion_table
 ```
@@ -147,12 +181,14 @@ dispersion_plot_data <- data.frame("distance" = dispersion$distances,
                                    "group" = dispersion$group)
 
 dispersion_box <- ggplot(dispersion_plot_data, aes(x = group, y = distance)) +
-  geom_boxplot(aes(fill = group), outliers = F, alpha = 0.7) +
-  geom_point(aes(fill = group), shape = 21, 
+  geom_boxplot(aes(fill = group), outliers = FALSE, alpha = 0.7) +
+  geom_point(aes(fill = group), shape = 21,
              position = position_jitter(width = 0.25, height = 0)) +
   theme_minimal() +
   scale_fill_manual(values = colors) +
-  labs(title = "Dispersion (Group variability)", x = "Group", y = "Distance to centroid")
+  labs(title = "Dispersion (Group variability)",
+       x = "Group",
+       y = "Distance to centroid")
   
 dispersion_box
 

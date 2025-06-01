@@ -33,17 +33,19 @@ library(FSA)
 ## Load species abundance, taxonomical annotation and metadata file
 ```{r}
 # Abundance table
-abundance <- readRDS(file="data/MetaphlanAbundance_Species.rds")
+abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 dim(abundance)
 
 # Taxonomical annotation
-annotation <- readRDS(file="data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = "data/MetaphlanAnnotations_Species.rds")
 dim(annotation)
 
 # Metadata
-metadata <- read.table(file = "data/metadata.tsv", header = TRUE, sep = "\t",
-                       quote = "", row.names = NULL)
+metadata <- read.table(file = "data/metadata.tsv", header = TRUE,
+                       sep = "\t",
+                       quote = "", 
+                       row.names = NULL)
 rownames(metadata) <- metadata$Sample
 dim(metadata)
 
@@ -57,7 +59,6 @@ dim(abundance)
 results_dir <- "results/report/01_Alpha-diversity"
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
-
 ```
 
 # Calculate richness and shannon
@@ -65,9 +66,9 @@ dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 # We calculate richness and Shannon index using vegan package 
 # and added both to a dataframe
 alpha_div <- data.frame(
-              Richness = rowSums(abundance > 0),
-              Shannon = vegan::diversity(abundance, index = "shannon"),
-              row.names = rownames(abundance)
+  Richness = rowSums(abundance > 0),
+  Shannon = vegan::diversity(abundance, index = "shannon"),
+  row.names = rownames(abundance)
 )
 ```
 
@@ -93,13 +94,13 @@ write.table(plot_data, file = "results/report/01_Alpha-diversity/01_Alpha_divers
 ## Create boxplots 
 ```{r, fig.width= 8, fig.height= 4}
 
-colors = c("1_M2" = "#349F2C", "1_M3" = "#BAE4B3",
+colors <- c("1_M2" = "#349F2C", "1_M3" = "#BAE4B3",
           "2_M2" = "#0F5096", "2_M3" = "#1779E3",
           "3_M2" = "#CA0020", "3_M3" = "#FF8784")
 
 richness_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Richness)) +
-  geom_boxplot(aes(fill = Area_Sampling), outliers = F, alpha = 0.7) +
-  geom_point(aes(fill = Area_Sampling), shape = 21, 
+  geom_boxplot(aes(fill = Area_Sampling), outliers = FALSE, alpha = 0.7) +
+  geom_point(aes(fill = Area_Sampling), shape = 21,
              position = position_jitter(width = 0.25, height = 0)) +
   theme_bw() +
   theme(legend.position = "none", panel.grid.major = element_blank(),
@@ -109,8 +110,8 @@ richness_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Richness)) +
   facet_grid(. ~ Area)
 
 shannon_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Shannon)) +
-  geom_boxplot(aes(fill = Area_Sampling), outliers = F, alpha = 0.7) +
-  geom_point(aes(fill = Area_Sampling), shape = 21, 
+  geom_boxplot(aes(fill = Area_Sampling), outliers = FALSE, alpha = 0.7) +
+  geom_point(aes(fill = Area_Sampling), shape = 21,
              position = position_jitter(width = 0.25, height = 0)) +
   theme_bw() +
   theme(legend.position = "none", panel.grid.major = element_blank(),

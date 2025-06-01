@@ -159,11 +159,12 @@ cat(json_str,
 
 # Permutational multivariate analysis of variance (PERMANOVA)
 
-## Distance to centroid (dispersion)
+## Dispersion for Area
+### Distance to centroid (dispersion)
 ```{r}
 
 dispersion <- betadisper(d = bray_curtis,
-                         group = groups$Groups,
+                         group = metadata$Area,
                          type = "centroid",
                          bias.adjust = FALSE)
 dispersion_table <- permutest(dispersion,
@@ -173,10 +174,8 @@ dispersion_table <- permutest(dispersion,
 dispersion_table
 ```
 
-## Dispersion boxplots
-
+### Dispersion boxplots
 ```{r}
-
 dispersion_plot_data <- data.frame("distance" = dispersion$distances,
                                    "group" = dispersion$group)
 
@@ -186,35 +185,73 @@ dispersion_box <- ggplot(dispersion_plot_data, aes(x = group, y = distance)) +
              position = position_jitter(width = 0.25, height = 0)) +
   theme_minimal() +
   scale_fill_manual(values = colors) +
-  labs(title = "Dispersion (Group variability)",
-       x = "Group",
+  labs(title = "Dispersion (Area variability)",
+       x = "Area",
        y = "Distance to centroid")
-  
+
 dispersion_box
 
-ggsave("../results/report/Beta-diversity/dispersion_plot.pdf", width = 5, height = 4)
+ggsave("results/report/02_Beta-diversity/04_dispersion_plot.pdf",
+       width = 6, height = 4)
 ```
 
-# PERMANOVA test (cannot run for phylogenetic distance metrics)
+## Dispersion for Sampling
+### Distance to centroid (dispersion)
+```{r}
 
+dispersion <- betadisper(d = bray_curtis,
+                         group = metadata$Sampling,
+                         type = "centroid",
+                         bias.adjust = FALSE)
+dispersion_table <- permutest(dispersion,
+                              permutations = how(nperm = 1000),
+                              by = "margin")
+
+dispersion_table
+```
+
+### Dispersion boxplots
+```{r}
+dispersion_plot_data <- data.frame("distance" = dispersion$distances,
+                                   "group" = dispersion$group)
+
+dispersion_box <- ggplot(dispersion_plot_data, aes(x = group, y = distance)) +
+  geom_boxplot(aes(fill = group), outliers = FALSE, alpha = 0.7) +
+  geom_point(aes(fill = group), shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  theme_minimal() +
+  scale_fill_manual(values = c("red", "blue")) +
+  labs(title = "Dispersion (Sampling variability)",
+       x = "Sampling",
+       y = "Distance to centroid")
+
+dispersion_box
+
+ggsave("results/report/02_Beta-diversity/05_dispersion_plot_sampling.pdf",
+       width = 5, height = 4)
+```
+
+# PERMANOVA test
 ```{r}
 # Differences among treatment groups
 set.seed(12)
 
 # # TODO: complain if not at least color group OR shape group is given
 # With all data
-independent_variables <- c("Groups")
- 
+independent_variables <- paste("Area", "Sampling", sep = "+")
+
 form <- paste0("bray_curtis ~", independent_variables) %>% as.formula
 form
 
-adonis_table <- adonis2(form, 
-                        data = groups,
+adonis_table <- adonis2(form,
+                        data = metadata,
                         permutations = 1000,
                         by = "margin")
 
 adonis_table
 
+write.table(adonis_table, file = "results/report/02_Beta-diversity/06_Adonis_table.xlsx",
+            row.names = TRUE, col.names = TRUE, sep = "\t", quote = FALSE)
 ```
 
 # Printing all package versions (good practice to ensure reproducibility)

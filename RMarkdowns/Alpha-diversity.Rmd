@@ -50,7 +50,7 @@ rownames(metadata) <- metadata$Sample
 dim(metadata)
 
 # Take only samples with sequencing and metadata information
-abundance <- abundance[rownames(abundance) %in% rownames(metadata),]
+abundance <- abundance[rownames(metadata),]
 dim(abundance)
 ```
 
@@ -84,7 +84,7 @@ plot_data <- cbind(alpha_div, metadata$Area, metadata$Sampling,
 str(plot_data)
 head(plot_data)
 
-colnames(plot_data) <- 
+colnames(plot_data) <-
   c("Richness", "Shannon", "Area", "Sampling_Date", "Area_Sampling")
 
 write.table(plot_data, file = "results/report/01_Alpha-diversity/01_Alpha_diversity.xlsx",
@@ -131,7 +131,9 @@ ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.pdf",
 # We have three areas that we want to compare,
 # we will use a non-parametric test for more than 2 groups: Kruskal-Wallis.
 # We are testing whether there are differences among the three areas
+
 kruskal.test(Richness ~ Area, plot_data)
+# Richness is significantly different among the areas!
 
 # When a Kruskal-Wallis test shows that there are significant differences between groups, 
 # you need a post-hoc test to determine which specific groups differ.
@@ -143,12 +145,15 @@ kruskal.test(Richness ~ Area, plot_data)
 
 # Perform post-hoc Dunn's test
 dunnTest(Richness ~ Area, plot_data, method = "bh")
+# Differences occur between 1-3 and 2-3
 
 # Same for Shannon
 kruskal.test(Shannon ~ Area, plot_data)
+# Almost significant!
 
-# Not significant, so not needed to but lets double check:
+# Not significant, so not needed to test between groups, but lets double check:
 dunnTest(Shannon ~ Area, plot_data, method = "bh")
+# No significant differences, but comparison of 1-3 is almost significant.
 ```
 
 # Printing all package versions (good practice to ensure reproducibility)

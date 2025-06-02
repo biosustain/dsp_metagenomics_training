@@ -1,0 +1,68 @@
+---
+title: "Abundance overview"
+author: "YOUR NAME HERE"
+date: "`r format(Sys.time())`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: show
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+This markdown is to plot an abundance overview of the top-10 most abundant species of the dataset
+
+# R Packages that need to be installed
+```{r packages, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+```
+
+# Load data objects
+
+## Load species abundance, taxonomical annotation and metadata file
+```{r}
+# Abundance table
+abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
+rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
+dim(abundance)
+
+# Taxonomical annotation
+annotation <- readRDS(file = "data/MetaphlanAnnotations_Species.rds")
+dim(annotation)
+
+# Metadata
+metadata <- read.table(file = "data/metadata.tsv",
+                       header = TRUE, sep = "\t",
+                       quote = "",
+                       row.names = NULL)
+rownames(metadata) <- metadata$Sample
+dim(metadata)
+
+# Take only samples with sequencing and metadata information
+abundance <- abundance[rownames(metadata),]
+dim(abundance)
+```
+
+# Creating a directory for the PCoA related results
+```{r}
+results_dir <- "results/report/04_Group-comparison"
+
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+```
+
+# Sampling comparison
+As there are two groups, a non-parametric test called Mann-Whitney U-test
+```{r}
+# We need to run this test for all species comparing between 
+# Sampling dates (M2, M3)
+# We need therefore a loop to run all the testt and later we need to correct 
+# for multiple testing
+
+
+```

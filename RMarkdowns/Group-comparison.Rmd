@@ -21,6 +21,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(RColorBrewer)
+library(FSA)
 ```
 
 # Load data objects
@@ -56,13 +57,161 @@ results_dir <- "results/report/04_Group-comparison"
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
 
-# Sampling comparison
-As there are two groups, a non-parametric test called Mann-Whitney U-test
+# Areas comparison
+As there are three areas, we will use a non-parametric test (not assuming any distribution)
+for three groups: Kruskal-Wallis test.
 ```{r}
-# We need to run this test for all species comparing between 
-# Sampling dates (M2, M3)
-# We need therefore a loop to run all the testt and later we need to correct 
-# for multiple testing
+# We need to run this test for all species comparing among Areas (1, 2, 3)
+# We need therefore a loop to run all the test and later we need to correct 
+# for multiple testing (BH). FOr the significant ones we will run a pot-hoc 
+# dunnTest to figure out between which groups the differences exist.
 
+# Merge abundance data with metadata
+abundance_df <- as.data.frame(cbind(abundance,
+                                    Area = metadata$Area,
+                                    Sample = metadata$Sample))
 
+# Get taxa columns
+taxa_cols <- setdiff(colnames(abundance_df), c("Sample", "Area"))
+length(taxa_cols) # 294 species - 294 hypothesis testing!
+
+# Let's apply a prevalence filter as my abundance table is very sparse 
+# and I want to reduce the noise of species only found in a sampl.
+# Let's keep only taxa present (non-zero abundance) in at least 20% of samples.
+# Step 1: Prevalence Filter — keep taxa present in ≥20% of samples
+n_samples <- nrow(abundance_df)
+min_prevalence <- 0.20 * n_samples
+
+# Calculate prevalence per taxon
+# Subset only the taxa part of the data (numeric matrix)
+abundance_taxa_only <- abundance_df[, taxa_cols]
+
+prevalent_taxa <- sapply(abundance_taxa_only[, taxa_cols],
+                         function(x) sum(x > 0)) >= min_prevalence
+filtered_taxa <- names(prevalent_taxa[prevalent_taxa])
+length(filtered_taxa) # 130 species passed the filter - 
+#130 hypothesis for testing!
+
+# Step 1: Kruskal–Wallis test for each taxon
+# A more elegant way to run loops in R is using one of its "apply" functions
+kruskal_results <- lapply(filtered_taxa, function(taxon) {
+  test_data <- abundance_df[, c(taxon, "Area")]
+  colnames(test_data) <- c("Abundance", "Area")
+  kruskal <- kruskal.test(Abundance ~ Area, data = test_data)
+  data.frame(
+    Taxon = taxon,
+    p_value = kruskal$p.value,
+    statistic = kruskal$statistic
+  )
+})
+
+# Combine results
+kruskal_df <- do.call(rbind, kruskal_results)
+rownames(kruskal_df) <- kruskal_df$Taxon
+
+# Adjusting for multiple testing by Bonferroni and Hochberg method
+# (False Discovery rate)
+kruskal_df$adj_p_value <- p.adjust(kruskal_df$p_value, method = "BH")
+
+# Filter significant taxa (e.g., FDR < 0.05)
+significant_taxa <- kruskal_df %>% filter(adj_p_value < 0.05)
+significant_taxa
+dim(significant_taxa)
+significant_taxa$Species_name <-
+  annotation$species[match(rownames(significant_taxa),
+                           rownames(annotation))]
+
+# Step 2: Run Dunn’s test for significant taxa
+dunn_results <- lapply(significant_taxa$Taxon, function(taxon) {
+  test_data <- abundance_df[, c(taxon, "Area")]
+  colnames(test_data) <- c("Abundance", "Area")
+  test_data$Abundance <- as.numeric(test_data$Abundance)
+
+  # Run dunnTest only if we have >1 group with non-zero data
+  tryCatch({
+    dunn <- dunnTest(Abundance ~ Area, data = test_data, method = "bh")
+    dunn_df <- dunn$res
+    dunn_df$Taxon <- taxon
+    return(dunn_df)
+  }, error = function(e) {
+    message(paste("Skipping", taxon, "due to error:", e$message))
+  })
+})
+
+# Combine Dunn test results
+dunn_df <- do.call(rbind, dunn_results)
+dunn_df$Species_name <-
+  annotation$species[match(dunn_df$Taxon,
+                           rownames(annotation))]
+
+# Let's save the statistics for Kruskal-Wallis test 
+# ordered by adj_p_value and with more logical order of the columns
+significant_taxa <- significant_taxa %>%
+  arrange(adj_p_value) %>%
+  relocate(Taxon, Species_name, statistic, p_value, adj_p_value)
+
+write.table(significant_taxa, 
+    file = "results/report/04_Group-comparison/01_kruskal-wallis-results.xlsx",
+    row.names = TRUE, col.names = TRUE, sep = "\t", quote = FALSE)
+
+# Let's save the post-hoc Dunn test results
+write.table(dunn_df,
+  file = "results/report/04_Group-comparison/02_post-hoc-dunn-results.xlsx",
+  row.names = TRUE, col.names = TRUE, sep = "\t", quote = FALSE)
+```
+
+# Plotting the top-20 significant species
+```{r}
+# 1. Get top 20 taxa from Kruskal–Wallis
+top_taxa <- kruskal_df %>%
+  arrange(adj_p_value) %>%
+  slice(1:20) %>%
+  pull(Taxon)
+
+# 2. Prepare long-format data with top taxa
+abundance_df$Sampling <- metadata$Sampling
+abundance_long <- abundance_df %>%
+  select(Sample, Area, Sampling, all_of(top_taxa)) %>%
+  pivot_longer(
+    cols = all_of(top_taxa),
+    names_to = "Taxon",
+    values_to = "Abundance"
+    ) 
+
+# 3. Order taxa by significance and fix data-types
+abundance_long$Abundance <- as.numeric(abundance_long$Abundance)
+abundance_long$Species_name <-
+  annotation$species[match(abundance_long$Taxon,
+                           rownames(annotation))]
+###
+abundance_long$Taxon <- factor(abundance_long$Taxon, levels = top_taxa)
+
+# 4. Plot heatmap with ggplot2
+heatmap_top20 <- ggplot(abundance_long, 
+                        aes(x = Sample, y = Taxon,
+                        fill = log10(Abundance+0.000001))) +
+  geom_tile(color = "white", size = 0.2) +
+  scale_fill_viridis_c(option = "C", name = "Abundance (log10)") +
+  facet_grid(. ~ Area, scales = "free") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid = element_blank(),
+    strip.text = element_text(face = "bold"),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_blank()
+  )
+
+heatmap_top20
+
+# Save it as a pdf
+ggsave("results/report/04_Group-comparison/03_significants_heatmap.pdf",
+       width = 8, height = 8)
+```
+
+# Printing all package versions (good practice to ensure reproducibility)
+```{r session-info, echo=FALSE}
+# Print R version and loaded packages
+sessionInfo()
 ```

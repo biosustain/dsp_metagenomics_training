@@ -18,10 +18,10 @@ This markdown is to calculate Bray-Curtis dissimilarities between samples based 
 # R Packages that need to be installed
 ```{r packages, message=FALSE, warning=FALSE}
 library(dplyr)
-library(tidylog, warn.conflicts = FALSE) # tidylog should be loaded after dplyr and tidyr and conflicts should be silenced since it (purposely) builds on top of those packages
+#library(tidylog, warn.conflicts = FALSE) # tidylog should be loaded after dplyr and tidyr and conflicts should be silenced since it (purposely) builds on top of those packages
 library(ggplot2)
 library(vegan)
-library(readxl)
+#library(readxl)
 library(plotly)
 ```
 

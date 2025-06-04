@@ -184,15 +184,17 @@ abundance_long$Species_name <-
   annotation$species[match(abundance_long$Taxon,
                            rownames(annotation))]
 ###
-abundance_long$Taxon <- factor(abundance_long$Taxon, levels = top_taxa)
+abundance_long$Species_name <- factor(abundance_long$Species_name, 
+                    levels = unique(abundance_long$Species_name))
+
 
 # 4. Plot heatmap with ggplot2
 heatmap_top20 <- ggplot(abundance_long, 
-                        aes(x = Sample, y = Taxon,
+                        aes(x = Sample, y = Species_name,
                         fill = log10(Abundance+0.000001))) +
   geom_tile(color = "white", size = 0.2) +
-  scale_fill_viridis_c(option = "C", name = "Abundance (log10)") +
-  facet_grid(. ~ Area, scales = "free") +
+  scale_fill_viridis_c(option = "B", name = "Abundance\n(log10)") +
+  facet_grid(. ~ Area + Sampling, scales = "free") +
   theme_bw() +
   theme(
     axis.text.x = element_blank(),

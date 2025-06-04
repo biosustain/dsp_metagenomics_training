@@ -58,14 +58,16 @@ dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
 
 # Areas comparison
-As there are three areas, we will use a non-parametric test (not assuming any distribution)
-for three groups: Kruskal-Wallis test.
-```{r}
-# We need to run this test for all species comparing among Areas (1, 2, 3)
-# We need therefore a loop to run all the test and later we need to correct 
-# for multiple testing (BH). FOr the significant ones we will run a pot-hoc 
-# dunnTest to figure out between which groups the differences exist.
+As there are three areas, we will use a non-parametric test 
+(not assuming any distribution) for three groups: Kruskal-Wallis test.
+We need to run this test for all species comparing among Areas (1, 2, 3),
+therefore we need to code a loop to run the test for all species and later
+we need to correct for multiple testing (Bonferroni-Hochberg). 
+FOr the significant ones we will run a pot-hoc dunnTest to figure out 
+between which groups the differences exist.
 
+## Kruskal-Wallis test
+```{r}
 # Merge abundance data with metadata
 abundance_df <- as.data.frame(cbind(abundance,
                                     Area = metadata$Area,
@@ -93,7 +95,7 @@ length(filtered_taxa) # 130 species passed the filter -
 #130 hypothesis for testing!
 
 # Step 1: Kruskal–Wallis test for each taxon
-# A more elegant way to run loops in R is using one of its "apply" functions
+# An elegant way to run loops in R is using one of its "apply" functions
 kruskal_results <- lapply(filtered_taxa, function(taxon) {
   test_data <- abundance_df[, c(taxon, "Area")]
   colnames(test_data) <- c("Abundance", "Area")
@@ -108,9 +110,12 @@ kruskal_results <- lapply(filtered_taxa, function(taxon) {
 # Combine results
 kruskal_df <- do.call(rbind, kruskal_results)
 rownames(kruskal_df) <- kruskal_df$Taxon
+```
 
-# Adjusting for multiple testing by Bonferroni and Hochberg method
-# (False Discovery rate)
+## Multiple testing correction
+Adjusting for multiple testing by Bonferroni and Hochberg 
+method (False Discovery rate)
+```{r}
 kruskal_df$adj_p_value <- p.adjust(kruskal_df$p_value, method = "BH")
 
 # Filter significant taxa (e.g., FDR < 0.05)
@@ -120,8 +125,10 @@ dim(significant_taxa)
 significant_taxa$Species_name <-
   annotation$species[match(rownames(significant_taxa),
                            rownames(annotation))]
+```
 
-# Step 2: Run Dunn’s test for significant taxa
+## Step 2: Run Dunn’s test for significant taxa
+```{r}
 dunn_results <- lapply(significant_taxa$Taxon, function(taxon) {
   test_data <- abundance_df[, c(taxon, "Area")]
   colnames(test_data) <- c("Abundance", "Area")
@@ -143,32 +150,38 @@ dunn_df <- do.call(rbind, dunn_results)
 dunn_df$Species_name <-
   annotation$species[match(dunn_df$Taxon,
                            rownames(annotation))]
+```
 
+## Let's print the statistics results
+```{r}
 # Let's save the statistics for Kruskal-Wallis test 
 # ordered by adj_p_value and with more logical order of the columns
 significant_taxa <- significant_taxa %>%
   arrange(adj_p_value) %>%
   relocate(Taxon, Species_name, statistic, p_value, adj_p_value)
 
-write.table(significant_taxa, 
-    file = "results/report/04_Group-comparison/01_kruskal-wallis-results.xlsx",
-    row.names = TRUE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.csv(significant_taxa,
+    file = "results/report/04_Group-comparison/01_kruskal-wallis-results.csv",
+    row.names = TRUE, quote = FALSE)
 
 # Let's save the post-hoc Dunn test results
-write.table(dunn_df,
-  file = "results/report/04_Group-comparison/02_post-hoc-dunn-results.xlsx",
-  row.names = TRUE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.csv(dunn_df,
+  file = "results/report/04_Group-comparison/02_post-hoc-dunn-results.csv",
+  row.names = TRUE, quote = FALSE)
 ```
 
 # Plotting the top-20 significant species
+
+## 1. Get top 20 taxa from Kruskal–Wallis
 ```{r}
-# 1. Get top 20 taxa from Kruskal–Wallis
 top_taxa <- kruskal_df %>%
   arrange(adj_p_value) %>%
   slice(1:20) %>%
   pull(Taxon)
+```
 
-# 2. Prepare long-format data with top taxa
+## 2. Prepare long-format data with top taxa
+```{r}
 abundance_df$Sampling <- metadata$Sampling
 abundance_long <- abundance_df %>%
   select(Sample, Area, Sampling, all_of(top_taxa)) %>%
@@ -177,8 +190,10 @@ abundance_long <- abundance_df %>%
     names_to = "Taxon",
     values_to = "Abundance"
     ) 
+```
 
-# 3. Order taxa by significance and fix data-types
+## 3. Order taxa by significance and fix data-types
+```{r}
 abundance_long$Abundance <- as.numeric(abundance_long$Abundance)
 abundance_long$Species_name <-
   annotation$species[match(abundance_long$Taxon,
@@ -187,8 +202,10 @@ abundance_long$Species_name <-
 abundance_long$Species_name <- factor(abundance_long$Species_name, 
                     levels = unique(abundance_long$Species_name))
 
+```
 
-# 4. Plot heatmap with ggplot2
+## 4. Plot heatmap with ggplot2
+```{r}
 heatmap_top20 <- ggplot(abundance_long, 
                         aes(x = Sample, y = Species_name,
                         fill = log10(Abundance+0.000001))) +
@@ -207,9 +224,9 @@ heatmap_top20 <- ggplot(abundance_long,
 
 heatmap_top20
 
-# Save it as a pdf
-ggsave("results/report/04_Group-comparison/03_significants_heatmap.pdf",
-       width = 8, height = 8)
+# Save it as a png
+ggsave("results/report/04_Group-comparison/03_significants_heatmap.png",
+       width = 8, height = 8, dpi = 300)
 ```
 
 # Printing all package versions (good practice to ensure reproducibility)

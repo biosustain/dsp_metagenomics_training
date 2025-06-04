@@ -110,9 +110,9 @@ pbar <- ggplot(abundance_long, aes(x = Sample, y = Abundance,
 
 pbar
 
-# Save it as a pdf
-ggsave("results/report/03_Abundance-overview/01_top10_species.pdf",
-       width = 8, height = 6)
+# Save it as a png
+ggsave("results/report/03_Abundance-overview/01_top10_species.png",
+       width = 8, height = 6, dpi = 300)
 ```
 
 # Let's summarize the same plot per Area and Sampling
@@ -133,8 +133,9 @@ abundance_summary <- abundance_long %>%
   summarise(MeanAbundance = mean(Abundance), .groups = "drop")
 
 # Adding the species name for the plot
-abundance_summary$Species_name <- annotation$species[match(abundance_summary$Species,
-                                                  rownames(annotation))]
+abundance_summary$Species_name <- 
+  annotation$species[match(abundance_summary$Species,
+                           rownames(annotation))]
 
 pbar_sum <- ggplot(abundance_summary, 
                    aes(x = interaction(Area, Sampling, sep = " | "),
@@ -145,16 +146,16 @@ pbar_sum <- ggplot(abundance_summary,
   labs(title = "Mean Abundance of Top 10 Taxa by Area and Sampling",
        x = "Area | Sampling",
        y = "Mean Relative Abundance (%)") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+  theme(axis.text.x = element_text(hjust = 0.5),
         strip.text = element_text(face = "bold")) +
   scale_y_continuous(expand = c(0, 0)) +
   scale_x_discrete(expand = c(0, 0))
 
 pbar_sum
 
-# Save it as a pdf
-ggsave("results/report/03_Abundance-overview/02_top10_species_per_area_sampling.pdf",
-       width = 8, height = 6)
+# Save it as a png
+ggsave("results/report/03_Abundance-overview/02_top10_species_per_area_sampling.png",
+       width = 8, height = 6, dpi = 300)
 
 ```
 

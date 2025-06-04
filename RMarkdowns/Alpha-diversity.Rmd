@@ -44,13 +44,13 @@ dim(annotation)
 # Metadata
 metadata <- read.table(file = "data/metadata.tsv", header = TRUE,
                        sep = "\t",
-                       quote = "", 
+                       quote = "",
                        row.names = NULL)
 rownames(metadata) <- metadata$Sample
 dim(metadata)
 
 # Take only samples with sequencing and metadata information
-abundance <- abundance[rownames(metadata),]
+abundance <- abundance[rownames(metadata), ]
 dim(abundance)
 ```
 
@@ -73,6 +73,7 @@ alpha_div <- data.frame(
 ```
 
 # Plot alpha diversity measurements
+
 ## Prepare plot dataframe
 ```{r}
 # We join the alpha diversity data with the grouping file
@@ -81,22 +82,19 @@ plot_data <- cbind(alpha_div, metadata$Area, metadata$Sampling,
   paste(metadata$Area, metadata$Sampling, sep = "_")
 )
 
-str(plot_data)
-head(plot_data)
-
 colnames(plot_data) <-
   c("Richness", "Shannon", "Area", "Sampling_Date", "Area_Sampling")
 
-write.table(plot_data, file = "results/report/01_Alpha-diversity/01_Alpha_diversity.xlsx",
-            row.names = TRUE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.csv(plot_data, file = "results/report/01_Alpha-diversity/01_Alpha_diversity.csv",
+          row.names = TRUE, quote = FALSE)
 ```
 
 ## Create boxplots 
-```{r, fig.width= 8, fig.height= 4}
+```{r}
 
 colors <- c("1_M2" = "#349F2C", "1_M3" = "#BAE4B3",
-          "2_M2" = "#0F5096", "2_M3" = "#1779E3",
-          "3_M2" = "#CA0020", "3_M3" = "#FF8784")
+            "2_M2" = "#0F5096", "2_M3" = "#1779E3",
+            "3_M2" = "#CA0020", "3_M3" = "#FF8784")
 
 richness_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Richness)) +
   geom_boxplot(aes(fill = Area_Sampling), outliers = FALSE, alpha = 0.7) +
@@ -122,8 +120,8 @@ shannon_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Shannon)) +
 
 richness_boxplot + shannon_boxplot
 
-ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.pdf",
-       width = 8, height = 4)
+ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.png",
+       width = 8, height = 4, dpi = 300)
 ```
 
 # Statistical comparison
@@ -135,13 +133,12 @@ ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.pdf",
 kruskal.test(Richness ~ Area, plot_data)
 # Richness is significantly different among the areas!
 
-# When a Kruskal-Wallis test shows that there are significant differences between groups, 
-# you need a post-hoc test to determine which specific groups differ.
-# Since Kruskal-Wallis is non-parametric,
-# the appropriate post-hoc test is also anon-parametric - dunnTest.
-# We correct for multiple testing using Benjamini-Hochberg (BH) procedure,
-# which is a method used to control the False Discovery Rate (FDR)
-# in multiple hypothesis testing
+# When a Kruskal-Wallis test shows that there are significant differences 
+# between groups, you need a post-hoc test to determine which specific groups
+# differ. Since Kruskal-Wallis is non-parametric, the appropriate post-hoc 
+# test is also anon-parametric - dunnTest. We correct for multiple testing 
+# using Benjamini-Hochberg (BH) procedure, which is a method used to control 
+# the False Discovery Rate (FDR) in multiple hypothesis testing
 
 # Perform post-hoc Dunn's test
 dunnTest(Richness ~ Area, plot_data, method = "bh")

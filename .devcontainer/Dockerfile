@@ -3,15 +3,14 @@ WORKDIR /home
 
 RUN apt update \
     && apt -y install \
-        bowtie \
-        bowtie2 \
         openjdk-21-jre \
+        python3-venv \
         r-base \
         r-base-dev \
         r-cran-dplyr \
         r-cran-ggplot2 \
+        r-cran-ggrepel \
         r-cran-patchwork \
-        r-cran-plotly \
         r-cran-rcolorbrewer \
         r-cran-rmarkdown \
         r-cran-tidyr \

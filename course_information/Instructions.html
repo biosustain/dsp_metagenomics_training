@@ -178,6 +178,7 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course contents</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../course_contents/Contents.html">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_contents/Data_processing.html">Metagenomics data processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../course_contents/Vuegen_report.html">Analysis reporting with Vuegen</a></li>
 </ul>
 
@@ -342,8 +343,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opening-the-nextflow-environment">Opening the Nextflow environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-checks">Initial checks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#open-the-codespace">Open the codespace</a></li>
 </ul>
             </nav>
         </div>
@@ -357,47 +357,17 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="instructions">
 <h1>Instructions<a class="headerlink" href="#instructions" title="Link to this heading">#</a></h1>
-<section id="opening-the-nextflow-environment">
-<h2>Opening the Nextflow environment<a class="headerlink" href="#opening-the-nextflow-environment" title="Link to this heading">#</a></h2>
-<p>To avoid installation and configuration issues we are going to deploy an environment for you containing Nextflow and its requirements.</p>
+<section id="open-the-codespace">
+<h2>Open the codespace<a class="headerlink" href="#open-the-codespace" title="Link to this heading">#</a></h2>
+<p>To avoid installation and configuration long processes and possible issues we are going to deploy an environment for you containing Nextflow and its requirements.</p>
 <p>If you want to open directly a GitHub codespace for this specific repository click here: <a class="reference external" href="https://codespaces.new/biosustain/dsp_metagenomics_training" rel="noreferrer" target="_blank"><img alt="Open in GitHub Codespaces" src="https://github.com/codespaces/badge.svg" /></a></p>
-<p>Don’t change the configuration and accept the default option. It says pay but you’re not paying…</p>
+<p>Increase to 4 cores, which are needed to run taxprofiler. It says pay but you’re not paying…</p>
 <p>If you want to do it manually go to <a class="reference external" href="https://github.com/biosustain/dsp_metagenomics_training" rel="noreferrer" target="_blank">course website</a></p>
 <p>Click on button <strong>Code</strong> and click on the Codespaces tab. There click on <strong>Create codespace</strong>. Now your Nextflow environment will be built following the instructions in devcontainer.json file (i.e. installing Ubuntu, Docker, Nextflow, R, Python, VSCode and RStudio server)</p>
 <p>To learn more about Github codespaces go <a class="reference external" href="https://github.com/features/codespaces" rel="noreferrer" target="_blank">here</a></p>
 <blockquote>
 <div><p>Please remember to delete your Codespace by the end of the class so that you do not consume your free Github codespace credits! If you do not delete it it will be deleted automatically days after you created.</p>
 </div></blockquote>
-</section>
-<section id="initial-checks">
-<h2>Initial checks<a class="headerlink" href="#initial-checks" title="Link to this heading">#</a></h2>
-<p>Now, Nextflow should be ready to run in your GitHub Codespace environment! Let’s check that you have a fully functional environment with Nextflow, java and Docker properly installed</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Verify java installation:</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>java<span class="w"> </span>-version
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Verify Nextflow installation:</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nextflow<span class="w"> </span>-v
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Nextflow current version, system and runtime:</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nextflow<span class="w"> </span>info
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Verify Docker installation:</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>--version
-</pre></div>
-</div>
-</div>
-<p>If everything went well you have a fully functional Nextflow environment for today. Rememeber that we are going to use VS code as our editor to write code and handle our files.</p>
-<p>To check if you have access to RStudio go to the Ports tab and click on “Open in Browser”, this will deploy the RStudio for the downstream analysis.</p>
 </section>
 </section>
 
@@ -446,8 +416,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opening-the-nextflow-environment">Opening the Nextflow environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-checks">Initial checks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#open-the-codespace">Open the codespace</a></li>
 </ul>
   </nav></div>
 

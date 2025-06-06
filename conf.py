@@ -81,13 +81,13 @@ html_theme = "sphinx_book_theme"
 # html_logo = "_static/logo-wide.svg"
 # html_favicon = "_static/logo-square.svg"
 html_theme_options = {
-    "github_url": "https://github.com/enryh/",
-    "repository_url": "https://github.com/enryh/notes_template",
+    "github_url": "https://github.com/biosustain/dsp_metagenomics_training",
+    "repository_url": "https://github.com/biosustain/dsp_metagenomics_training",
     # "repository_branch": "main",
     # "home_page_in_toc": True,
     # "path_to_docs": "docs",
     "show_navbar_depth": 1,
-    # "use_edit_page_button": True,
+    "use_edit_page_button": True,
     "use_repository_button": True,
     "use_download_button": True,
     "launch_buttons": {

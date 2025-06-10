@@ -22,6 +22,8 @@ as association measure.
 ```{r packages, message=FALSE, warning=FALSE}
 library(compositions)
 library(igraph)
+library(ggplot2)
+library(tidyr)
 ```
 
 ### 1.2, Load data
@@ -200,7 +202,7 @@ graph <- graph_from_adjacency_matrix(edge_weight_matrix, mode = "undirected", we
 graph <- delete_vertices(graph, degree(graph) == 0)
 
 # Save edge list
-write.table(as_data_frame(graph, what = "edges"),
+write.table(igraph::as_data_frame(graph),
             file = file.path(results_dir, "3_pearson_network_edgelist.csv"),
             sep = ",", quote = FALSE, row.names = FALSE)
 ```

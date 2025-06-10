@@ -21,6 +21,8 @@ data using the the [NetCoMi](https://github.com/stefpeschel/NetCoMi) package.
 ### 1.1. Import R Packages
 ```{r packages, message=FALSE, warning=FALSE}
 library(NetCoMi)
+library(ggplot2)
+library(tidyr)
 ```
 
 ### 1.2. Load data

@@ -297,3 +297,13 @@ plot(
 # Close device
 dev.off()
 ```
+
+## 6. Further information
+
+The [Network learning & analysis](https://microbiome.github.io/OMA/docs/devel/pages/network_learning) chapter 
+from the [Orchestrating Microbiome Analysis Book](https://microbiome.github.io/OMA/docs/devel/) provides more 
+details about all the steps and consideration to take when creating and analyzing microbial association networks (MANs).
+
+Also, the [netcomi](https://github.com/stefpeschel/NetCoMi) package provides a comprehensive set of tools for MAN creation, 
+analysis, and visualization. We crated an addtional [R markdown file](https://github.com/biosustain/dsp_metagenomics_training/blob/main/RMarkdowns/Microb-networks-netcomi.Rmd)
+to demonstrate how to use this package using the same dataset from this course.

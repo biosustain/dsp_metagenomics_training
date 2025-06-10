@@ -100,6 +100,7 @@ library(ggplot2)
 library(patchwork)
 library(vegan)
 library(FSA)
+#library(plotly)
 ```
 
 # Load data objects
@@ -273,6 +274,37 @@ ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.png",
        dpi = 300)
 ```
 
+
+<div class="extra">
+  <strong>💡 Extra:</strong> You can try to make interactive plots.
+</div>
+
+
+```{r, eval=FALSE}
+# Your ggplot boxplot
+shannon_boxplot <- ggplot(plot_data, 
+                          aes(x = Sampling_Date, 
+                              y = Shannon)) +
+  geom_boxplot(aes(fill = Area_Sampling), 
+               outlier.shape = NA, # hide outliers manually
+               alpha = 0.7) +
+  geom_point(aes(fill = Area_Sampling), 
+             shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  theme_bw() +
+  theme(legend.position = "none", 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = colors) +
+  labs(x = "Sampling", 
+       y = "Shannon index") +
+  facet_grid(. ~ Area)
+
+# Make it interactive
+ggplotly(shannon_boxplot)
+
+```
+
 # Statistical comparison
 
 We have three areas that we want to compare,
@@ -292,6 +324,21 @@ kruskal.test(Richness ~ Area,
 When a Kruskal-Wallis test shows that there are significant differences 
 between groups, you need a post-hoc test to determine which specific groups differ. Since Kruskal-Wallis is non-parametric, the appropriate post-hoc  test is also a non-parametric - dunnTest. We correct for multiple testing using Benjamini-Hochberg (BH) procedure, which is a method used to control the False Discovery Rate (FDR) in multiple hypothesis testing
 :::
+
+
+✅ Post-hoc Dunn’s Test — Hypothesis Explanation
+
+Dunn’s test is a non-parametric post-hoc test used after a Kruskal-Wallis test, to determine which specific groups are significantly different from each other.
+
+💡 Why Dunn’s Test?
+
+- Kruskal-Wallis tells you at least one group differs, but not which one.
+
+- Dunn’s test compares all pairwise group combinations.
+
+- It adjusts p-values for multiple comparisons (e.g., Bonferroni, Holm, or FDR).
+
+
 
 ## Perform post-hoc Dunn's test
 
@@ -326,6 +373,33 @@ dunnTest(Shannon ~ Area,
 **No significant differences, but comparison of 1-3 is almost significant.**
 
 
+::: boxy
+🧪 **Why Can Richness Differ Significantly, but Shannon Doesn’t?**
+
+Here’s why this happens:
+
+✅ 1. Richness varies — but community evenness doesn’t
+
+- If Area A has more species than Area B (higher richness), that’s easy to detect statistically.
+
+- But if both areas still have similar species dominance patterns (i.e. same evenness), Shannon may not differ.
+
+✅ 2. Shannon is more "stable" because it includes evenness
+
+- Shannon accounts for how balanced species proportions are.
+
+- If one area has a few rare taxa (extra richness) but still dominated by a few taxa, the Shannon index may not change much.
+
+✅ 3. Richness is more sensitive to sampling depth or rare species
+
+- Richness increases just by detecting one more species.
+
+- Shannon barely moves unless species abundances change substantially.
+
+>Richness is significantly different between areas,
+but Shannon is not, because the evenness of species abundances is similar across areas.
+
+:::
 
 # Printing all package versions (good practice to ensure reproducibility)
 

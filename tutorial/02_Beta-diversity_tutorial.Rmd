@@ -1,0 +1,475 @@
+---
+title: "Beta Diversity"
+subtitle: '`r format(Sys.Date(),format="%d-%b-%Y")`'
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+      print: false
+    toc_depth: 4
+    number_sections: true
+    highlight: tango
+    df_print: paged
+    code_folding: "show"
+    self_contained: true
+    keep_md: false
+    encoding: 'UTF-8'
+    css: "assets/report.css"
+    includes:
+      in_header: "assets/copy-button.html"
+    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
+---
+
+```{r,echo=FALSE,include=FALSE}
+#  variables
+rep_org <- "Data Science Platform" 
+rep_core3 <- "Alberto Pallejà Caro"
+rep_core_email3 <- "apca@biosustain.dtu.dk"
+rep_core2 <- "Andres Sebastian Ayala Ruano"
+rep_core_email2 <- "asaru@dtu.dk"
+rep_core <- "Juliana Assis"
+rep_core_email <- "jasge@dtu.dk"
+
+# Combine all responsibles into a single string
+rep_all <- paste0(
+  rep_core3, " (", rep_core_email3, ")<br>",
+  rep_core2, " (", rep_core_email2, ")<br>",
+  rep_core, " (", rep_core_email, ")"
+)
+```
+
+<br>
+
+::: boxy
+__Organisation:__ `r rep_org`  
+__Responsibles:__ `r paste0(rep_all," ")`  
+:::
+
+<br>
+
+
+<!-- ----------------------- Do not edit above this ----------------------- -->
+
+
+This markdown is to calculate Bray-Curtis dissimilarities between samples based on species abundance and to plot these ones on the two first axis of a principal coordinate analysis (PCoA).
+
+::: boxy
+
+🔄 Beta Diversity: Bray-Curtis Dissimilarity & PCoA
+
+**Beta diversity** measures **differences in community composition between samples**. It captures how similar or dissimilar samples are in terms of their species or taxa abundance.
+
+---
+
+**📏 Bray-Curtis Dissimilarity**
+
+The **Bray-Curtis dissimilarity** is a widely used metric in ecology and microbiome analysis. It compares species abundances between two samples and ranges from **0** (identical composition) to **1** (completely different).
+
+$$
+BC_{ij} = \frac{\sum |x_{ik} - x_{jk}|}{\sum (x_{ik} + x_{jk})}
+$$
+
+Where:
+- \( x_{ik} \) is the abundance of species *k* in sample *i*,
+- \( x_{jk} \) is the abundance of species *k* in sample *j*.
+
+---
+
+**🧭 Principal Coordinates Analysis (PCoA)**
+
+To **visualize** the dissimilarity between samples, we use **Principal Coordinates Analysis (PCoA)**. This method projects the dissimilarity matrix into a lower-dimensional space (typically 2D), allowing us to:
+
+- Explore **patterns** in microbial communities.
+- Identify **clustering** by experimental groups (e.g., treatment, timepoint).
+- Detect **outliers** in community composition.
+
+---
+
+**🎯 Goal**
+
+- **Input**: A table of species abundances per sample.
+- **Step 1**: Compute **Bray-Curtis dissimilarity** between all sample pairs.
+- **Step 2**: Perform **PCoA** on the distance matrix.
+- **Output**: A 2D scatter plot where:
+  - Each point = a sample.
+  - Distance between points = ecological dissimilarity.
+
+---
+:::
+
+
+# R Packages that need to be installed
+
+```{r packages, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(vegan)
+```
+
+# Load data objects
+
+**Load species abundance, taxonomical annotation and metadata file**
+
+```{r}
+# Abundance table
+abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
+
+# Taxonomical annotation
+annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+
+# Metadata
+metadata <- read.table(file = "../data/metadata.tsv",
+                       header = TRUE, sep = "\t",
+                       quote = "",
+                       row.names = NULL)
+rownames(metadata) <- metadata$Sample
+
+# Take only samples with sequencing and metadata information
+abundance <- abundance[rownames(metadata), ]
+```
+
+# Creating a directory for the PCoA related results
+```{r}
+results_dir <- "results/report/02_Beta-diversity"
+
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+```
+
+## Plotting a Principal coordinates analysis (PCoA)
+
+**Calculate Bray-Curtis Dissimilarity Matrix**
+
+```{r}
+bray_curtis <- vegdist(abundance, 
+                       method = "bray")
+```
+
+### Perform PCoA
+
+- **cmdscale()** performs classical multidimensional scaling (also called PCoA) on a distance matrix.
+
+- **bray_curtis:** a dissimilarity matrix (often from vegdist() in vegan).
+
+
+- **eig** = TRUE: store eigenvalues, which indicate how much variation is explained by each axis.
+
+- **k = 2:** return 2 dimensions, typically the top 2 axe
+
+```{r}
+pcoa_result <- cmdscale(bray_curtis, 
+                        eig = TRUE, 
+                        k = 2)
+```
+
+
+## Extract eigenvalues and points
+
+**Only positive eigenvalues contribute to variance explained**
+
+- Calculates proportion of variance each axis explains.
+- Multiplies first two axes by 100 and rounds: this is used for axis labels later
+
+```{r}
+eig_vals <- pcoa_result$eig
+eig_vals <- eig_vals[eig_vals > 0]
+var_explained <- eig_vals / sum(eig_vals)
+axis_variance <- round(var_explained[1:2] * 100)
+
+scores <- as.data.frame(pcoa_result$points)
+scores$Area <- metadata$Area
+scores$Sampling <- metadata$Sampling
+colnames(scores) <- c("Axis1", "Axis2", "Area", "Sampling")
+```
+
+### Extract loading data
+
+To calculate variable loadings (contributions of the original variables 
+to the PCoA axes), you can use the envfit() function in the vegan package. Fit environmental vectors to the ordination
+
+
+- **envfit()** fits abundance data (e.g., species) onto the ordination.
+
+- **perm = 999:** permutation test to assess significance of variable vectors.
+
+- Returns vectors that show how taxa relate to ordination axes.
+
+- Filters arrows for strong correlations **(r ≥ 0.75)** and significance **(p ≤ 0.05)**
+
+```{r}
+loadings <- envfit(pcoa_result, 
+                   abundance, 
+                   perm = 999)
+
+loadings_df <- as.data.frame(loadings$vectors$arrows[loadings$vectors$r >= 0.75 & 
+            loadings$vectors$pvals <= 0.05,])
+colnames(loadings_df) <- c("Axis1", "Axis2")
+```
+
+## Step 4: Plot PCoA results
+
+```{r}
+colors <- c("1" = "#349F2C",
+            "2" = "#0F5096",
+            "3" = "#CA0020")
+
+scores$Area <- as.factor(scores$Area) # as a factor
+
+shapes <- c("M2" = 21,
+            "M3" = 17)
+
+scores$Sampling <- as.factor(scores$Sampling) # as a factor
+
+p <- ggplot(scores, 
+            aes(x = Axis1, y = Axis2)) +
+  
+  geom_point(aes(color = Area, 
+                 fill = Area, 
+                 shape = Sampling), 
+             size = 3) +
+  
+  scale_color_manual(values = colors) +
+  
+  scale_fill_manual(values = colors) +
+  
+  scale_shape_manual(values = shapes) +
+  
+  theme_bw() +
+  
+  theme(aspect.ratio = 1) +
+  
+  labs(x = paste0("Axis1 ", 
+                  axis_variance[1], "%"),
+       y = paste0("Axis2 ", axis_variance[2], "%"),
+       title = "PCoA plot")
+p
+
+# Save it as a png
+ggsave("results/report/02_Beta-diversity/01_PCoA_plot.png",
+       width = 8, height = 6, dpi = 300)
+```
+
+## Step 5: Plot the PCoA with Loadings (optional)
+
+```{r}
+p <- ggplot(scores, 
+            aes(x = Axis1, 
+                y = Axis2)) +
+  
+  geom_point(aes(color = Area, 
+                 fill = Area, 
+                 shape = Sampling), 
+             size = 2) +
+  
+  geom_segment(data = loadings_df,
+               aes(x = 0, 
+                   y = 0, 
+                   xend = Axis1, 
+                   yend = Axis2),
+               arrow = arrow(length = unit(0.1, "cm")), 
+               color = "grey",
+               linewidth = 0.5) +
+  
+  geom_text(data = loadings_df, 
+            aes(x = Axis1, 
+                y = Axis2,
+            label = annotation$species[match(rownames(loadings_df),
+            rownames(annotation))]),
+            vjust = -0.5,
+            hjust = 0.5,
+            color = "red",
+            position = "jitter",
+            size = 3) +
+  
+  scale_color_manual(values = colors) +
+  
+  scale_fill_manual(values = colors) +
+  
+  scale_shape_manual(values = shapes) +
+  
+  theme_bw() +
+  
+  theme(aspect.ratio = 1) +
+  
+  labs(x = paste0("Axis1 ", 
+                  axis_variance[1], "%"),
+       y = paste0("Axis2 ", 
+                  axis_variance[2], "%"),
+       title = "PCoA with variable loadings",
+       subtitle = "r >= 0.75, 
+       P <= 0.05")
+p
+
+# Save it as a png
+ggsave("results/report/02_Beta-diversity/02_PCoA_with_loadings.png",
+       width = 8, height = 6, dpi = 300)
+```
+
+# Permutational multivariate analysis of variance (PERMANOVA)
+
+Before running a PERMANOVA test let's assess the data dispersion within the areas and within sampling dates. High dispersion of data within the groups could affect the analysis of variance test as this test assumes homogeneity of variance 
+
+**Dispersion for Area**
+
+## Distance to centroid (dispersion)
+
+```{r}
+dispersion <- betadisper(d = bray_curtis,
+                         group = metadata$Area,
+                         type = "centroid",
+                         bias.adjust = FALSE)
+
+dispersion_table <- permutest(dispersion,
+                              permutations = how(nperm = 1000),
+                              by = "margin")
+
+dispersion_table
+```
+
+**There is a significant dispersion of the data points among the areas**
+
+### Dispersion boxplots
+
+```{r}
+dispersion_plot_data <- data.frame("distance" = dispersion$distances,
+                                   "group" = dispersion$group)
+
+dispersion_box <- ggplot(dispersion_plot_data, aes(x = group, 
+                                                   y = distance)) +
+  
+  geom_boxplot(aes(fill = group), 
+               outliers = FALSE, 
+               alpha = 0.7) +
+  
+  geom_point(aes(fill = group), 
+             shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  
+  theme_bw() +
+  
+  scale_fill_manual(values = colors) +
+  
+  labs(title = "Dispersion (Area variability)",
+       x = "Area",
+       y = "Distance to centroid")
+
+dispersion_box
+
+# Save it as a png
+ggsave("results/report/02_Beta-diversity/03_dispersion_plot.png",
+       width = 6, height = 4, dpi = 300)
+```
+
+## Dispersion for Sampling
+
+**Distance to centroid (dispersion)**
+
+```{r}
+dispersion <- betadisper(d = bray_curtis,
+                         group = metadata$Sampling,
+                         type = "centroid",
+                         bias.adjust = FALSE)
+
+dispersion_table <- permutest(dispersion,
+                              permutations = how(nperm = 1000),
+                              by = "margin")
+
+dispersion_table
+
+```
+
+**There is a significant dispersion of the data points between the sampling dates**
+
+### Dispersion boxplots
+
+```{r}
+dispersion_plot_data <- data.frame("distance" = dispersion$distances,
+                                   "group" = dispersion$group)
+
+dispersion_box <- ggplot(dispersion_plot_data, 
+                         aes(x = group, 
+                             y = distance)) +
+  
+  geom_boxplot(aes(fill = group),
+               outliers = FALSE, 
+               alpha = 0.7) +
+  
+  geom_point(aes(fill = group), 
+             shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  
+  theme_bw() +
+  
+  scale_fill_manual(values = c("red", "blue")) +
+  
+  labs(title = "Dispersion (Sampling variability)",
+       x = "Sampling",
+       y = "Distance to centroid")
+
+dispersion_box
+
+# Save it as a png
+ggsave("results/report/02_Beta-diversity/04_dispersion_plot_sampling.png",
+       width = 5, height = 4, dpi = 300)
+```
+
+# PERMANOVA test
+
+
+A significant permutest from a betadisper object indicates that there are significant differences in dispersion among groups, which violates the 
+assumption of homogeneity of variances required for PERMANOVA. 
+You can still perform a PERMANOVA, but the results should be interpreted 
+with caution, and you should consider additional analyses.
+
+
+**Differences among treatment groups**
+
+- TODO: complain if not at least color group OR shape group is given
+- With all data
+- Both factors: area and sampling data significantly explain the compositional 
+- variance among the samples. These results should be interpreted with caution 
+- as there is significant differences in dispersion among the groups.
+
+```{r}
+set.seed(12)
+
+independent_variables <- paste("Area", 
+                               "Sampling", 
+                               sep = "+")
+
+form <- paste0("bray_curtis ~", 
+               independent_variables) %>% 
+  as.formula
+
+adonis_table <- adonis2(form,
+                        data = metadata,
+                        permutations = 1000,
+                        by = "margin")
+
+write.csv(adonis_table,
+          file = "results/report/02_Beta-diversity/05_Adonis_table.csv",
+          row.names = TRUE, quote = FALSE)
+```
+
+# Printing all package versions (good practice to ensure reproducibility)
+
+```{r session-info, echo=FALSE}
+# Print R version and loaded packages
+sessionInfo()
+```
+
+<!-- --------------------- Do not edit this and below ---------------------- -->
+
+</br>
+
+```{r,child="assets/_footer-lab.Rmd"}
+```
+
+```{r,eval=FALSE,echo=FALSE}
+# manually run this to render this document to HTML
+rmarkdown::render("BetaDiversity.Rmd")
+# then run this to convert HTML to PDF (if needed)
+#pagedown::chrome_print("core-report.html",output="core-report.pdf")
+```

@@ -49,14 +49,11 @@ dim(metadata)
 # Take only samples with sequencing and metadata information
 abundance <- abundance[rownames(abundance) %in% rownames(metadata),]
 dim(abundance)
-
-# Replace the column names of the abundance table with the species names
-# colnames(abundance) <- annotation$species[match(colnames(abundance), rownames(annotation))]
 ```
 
 ### 1.3. Create a directory to store the results
 ```{r}
-results_dir <- "results/report/04_Microbial-association-networks"
+results_dir <- "results/report/05_Microbial-association-networks"
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
@@ -202,6 +199,9 @@ graph <- graph_from_adjacency_matrix(edge_weight_matrix, mode = "undirected", we
 # Remove singletons - unconnected nodes
 graph <- delete_vertices(graph, degree(graph) == 0)
 
+# Print summary of the graph
+summary(graph)
+
 # Convert to dataframe
 edge_df <- igraph::as_data_frame(graph)
 
@@ -217,7 +217,7 @@ write.table(edge_df,
 ## 4. Network analysis
 
 We calculate different centrality measures, which indicate the importance of each node following various criteria. 
-Here we calculate the **degree**, **eigenvector centrality**, and **betweenness** centrality. **Hubs** are defined as 
+Here we calculate the **degree** and **betweenness** centrality. **Hubs** are defined as 
 nodes with a degree above the 90% quantile of the empirical degree distribution.
 
 Clusters are identified using the **greedy modularity optimization** algorithm 
@@ -228,7 +228,6 @@ aiming to maximize the density of intra-community edges compared to inter-commun
 ```{r}
 # Calculate centralities
 deg <- degree(graph)
-eig <- eigen_centrality(graph, weights = E(graph)$weight)$vector
 betw <- betweenness(graph, weights = E(graph)$weight)
 
 # Community detection
@@ -243,7 +242,6 @@ is_hub <- betw >= betw_threshold
 node_table <- data.frame(
   taxa = V(graph)$name,
   degree = deg,
-  eigen_centrality = eig,
   betweenness = betw,
   cluster = clusters_vec,
   is_hub = is_hub

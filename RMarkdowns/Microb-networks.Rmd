@@ -24,6 +24,7 @@ library(compositions)
 library(igraph)
 library(ggplot2)
 library(tidyr)
+library(dplyr)
 ```
 
 ### 1.2, Load data
@@ -201,8 +202,14 @@ graph <- graph_from_adjacency_matrix(edge_weight_matrix, mode = "undirected", we
 # Remove singletons - unconnected nodes
 graph <- delete_vertices(graph, degree(graph) == 0)
 
+# Convert to dataframe
+edge_df <- igraph::as_data_frame(graph)
+
+# Rename column names
+names(edge_df)[1:2] <- c("source", "target")
+
 # Save edge list
-write.table(igraph::as_data_frame(graph),
+write.table(edge_df,
             file = file.path(results_dir, "3_pearson_network_edgelist.csv"),
             sep = ",", quote = FALSE, row.names = FALSE)
 ```

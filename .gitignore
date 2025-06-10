@@ -8,3 +8,7 @@ course_contents/~$IntroMetagenomics.pptx
 # Ignore R environment and history
 RMarkdowns/.RData
 RMarkdowns/.Rhistory
+
+# Ignore nextflow files
+.nextflow*
+work/

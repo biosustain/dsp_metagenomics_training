@@ -1,6 +1,6 @@
 install.packages(
   c(
-    "FSA", "languageserver"
+    "FSA", "languageserver", "compositions"
   ),
   dependencies = TRUE,
   repos = "https://cloud.r-project.org",

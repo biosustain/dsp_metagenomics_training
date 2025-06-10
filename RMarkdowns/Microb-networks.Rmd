@@ -235,7 +235,7 @@ clusters <- cluster_fast_greedy(graph, weights = E(graph)$weight)
 clusters_vec <- membership(clusters)
 
 # Hubs: top 10% by eigenvector centrality
-betw_threshold <- quantile(eig, 0.9)
+betw_threshold <- quantile(betw, 0.9)
 is_hub <- betw >= betw_threshold
 
 # Create node table

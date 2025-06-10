@@ -123,12 +123,7 @@ Microbiome abundance tables are often sparse. To reduce noise from rare taxa (e.
 
 We will **keep only taxa that are present (non-zero abundance) in at least 20% of the samples**.
 
-<div class="question">
-  <strong>❓ Question:</strong> How many species passed the filter?
-</div>
-
-
-**Step 1: Kruskal–Wallis test for each taxon**
+**Step 2: Kruskal–Wallis test for each taxon**
 
 - An elegant way to run loops in R is using one of its "apply" functions
 
@@ -155,6 +150,14 @@ prevalent_taxa <- sapply(abundance_taxa_only[, taxa_cols],
 
 filtered_taxa <- names(prevalent_taxa[prevalent_taxa])
 
+```
+
+
+<div class="question">
+  <strong>❓ Question:</strong> How many species passed the filter?
+</div>
+
+```{r}
 kruskal_results <- lapply(filtered_taxa, 
                           function(taxon) {
                             
@@ -340,6 +343,45 @@ heatmap_top20
 # Save it as a png
 ggsave("results/report/04_Group-comparison/03_significants_heatmap.png",
        width = 8, height = 8, dpi = 300)
+```
+
+
+
+<div class="extra">
+  <strong>💡 Extra:</strong> You can try to make interactive plots.
+</div>
+
+```{r, eval=FALSE}
+#library(plotly)
+
+# Build the ggplot
+heatmap_top20 <- ggplot(abundance_long, 
+                        aes(x = Sample, 
+                            y = Species_name,
+                            fill = log10(Abundance + 1e-6),
+                            text = paste0("Sample: ", Sample,
+                                          "<br>Species: ", Species_name,
+                                          "<br>log10(Abundance): ", round(log10(Abundance + 1e-6), 3)))) +
+  
+  geom_tile(color = "white", size = 0.2) +
+  
+  scale_fill_viridis_c(option = "B", name = "Abundance\n(log10)") +
+  
+  facet_grid(. ~ Area + Sampling, scales = "free") +
+  
+  theme_bw() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid = element_blank(),
+    strip.text = element_text(face = "bold"),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_blank()
+  )
+
+# Convert to interactive plotly
+ggplotly(heatmap_top20, tooltip = "text")
+
 ```
 
 # Printing all package versions (good practice to ensure reproducibility)

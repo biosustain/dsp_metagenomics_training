@@ -60,6 +60,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(RColorBrewer)
+#library(plotly)
 ```
 
 # Load data objects
@@ -90,7 +91,8 @@ abundance <- abundance[rownames(abundance) %in%
                          rownames(metadata),]
 ```
 
-## Creating a directory for the PCoA related results
+
+## Creating a directory for the related results
 
 ```{r}
 results_dir <- "results/report/03_Abundance-overview"
@@ -147,6 +149,13 @@ abundance_long$Sampling <- metadata$Sampling[match(abundance_long$Sample,
   <strong>💡 Tip:</strong> Ensure Sample is a factor ordered by Sampling + Sample name (for visual grouping).
 </div>
 
+
+🔄 Data Preparation
+
+- **arrange(Sampling, Sample):** Sorts the abundance_long data frame by the Sampling and Sample columns to ensure consistent order.
+
+- **mutate(Sample = factor(...)):** Converts the Sample column to a factor with levels ordered as they appear in the data. This prevents ggplot2 from reordering them alphabetically.
+
 ```{r}
 abundance_long <- abundance_long %>%
   arrange(Sampling, Sample) %>%
@@ -186,6 +195,34 @@ ggsave("results/report/03_Abundance-overview/01_top10_species.png",
        width = 8, height = 6, dpi = 300)
 ```
 
+
+<div class="extra">
+  <strong>💡 Extra:</strong> You can try to make interactive plots.
+</div>
+
+
+```{r, eval=FALSE}
+pbar <- ggplot(abundance_long, aes(x = Sample, 
+                                   y = Abundance,
+                                   fill = Species_name)) +
+  geom_bar(stat = "identity", 
+           position = "stack", 
+           show.legend = TRUE) +
+  scale_fill_brewer(palette = "Paired") +
+  labs(title = "Top-10 Most Abundant Species",
+       x = "Sample",
+       y = "Relative Abundance (%)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_discrete(expand = c(0, 0)) +
+  facet_wrap(. ~ Area, scales = "free")
+
+# Make it interactive with plotly
+ggplotly(pbar)
+
+```
+
 ## Let's summarize the same plot per Area and Sampling
 
 - Add Sample column and merge with metadata
@@ -207,7 +244,7 @@ abundance_long <- abundance_top10 %>%
 abundance_summary <- abundance_long %>%
   group_by(Area, Sampling, Species) %>%
   summarise(MeanAbundance = mean(Abundance), 
-            .groups = "drop")
+            .groups = "drop") #ungroup
 
 abundance_summary$Species_name <- 
   annotation$species[match(abundance_summary$Species,
@@ -243,6 +280,11 @@ pbar_sum
 ggsave("results/report/03_Abundance-overview/02_top10_species_per_area_sampling.png", width = 8, height = 6, dpi = 300)
 
 ```
+
+<div class="tip">
+  <strong>💡 Tip:</strong> You can play with all the codes and parameters, ex: plot the top 50 taxa.
+</div>
+
 
 # Printing all package versions (good practice to ensure reproducibility)
 

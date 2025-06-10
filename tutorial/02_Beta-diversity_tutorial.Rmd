@@ -170,6 +170,7 @@ pcoa_result <- cmdscale(bray_curtis,
 **Only positive eigenvalues contribute to variance explained**
 
 - Calculates proportion of variance each axis explains.
+
 - Multiplies first two axes by 100 and rounds: this is used for axis labels later
 
 ```{r}
@@ -194,9 +195,23 @@ to the PCoA axes), you can use the envfit() function in the vegan package. Fit e
 
 - **perm = 999:** permutation test to assess significance of variable vectors.
 
+
+::: boxy
+- Randomly shuffles the group labels (e.g., Area) many times (in this case, 999 times).
+- Recalculates the test statistic (e.g., pseudo-F) for each permutation.
+- Compares the observed statistic to this distribution to compute a **p-value**.
+
+This p-value tells you **how likely it is** to observe such a strong group difference **just by chance**.
+
+**Why 999?**
+
+Using 999 permutations gives you a reasonably accurate estimate of the null distribution. The smallest possible p-value (assuming none of the permutations gives a stronger effect than the observed one) is:
+:::
+
 - Returns vectors that show how taxa relate to ordination axes.
 
 - Filters arrows for strong correlations **(r ≥ 0.75)** and significance **(p ≤ 0.05)**
+
 
 ```{r}
 loadings <- envfit(pcoa_result, 
@@ -307,7 +322,82 @@ ggsave("results/report/02_Beta-diversity/02_PCoA_with_loadings.png",
        width = 8, height = 6, dpi = 300)
 ```
 
+
+<div class="extra">
+  <strong>💡 Extra:</strong> You can try to make interactive plots.
+</div>
+
+```{r, eval=FALSE}
+library(plotly)
+
+# Your original ggplot
+p <- ggplot(scores, 
+            aes(x = Axis1, 
+                y = Axis2)) +
+  
+  geom_point(aes(color = Area, 
+                 fill = Area, 
+                 shape = Sampling, 
+                 text = paste("Area:", Area, "<br>Sampling:", Sampling)), 
+             size = 2) +
+
+  # Vector arrows as segments (arrowhead won't appear in plotly)
+  geom_segment(data = loadings_df,
+               aes(x = 0, 
+                   y = 0, 
+                   xend = Axis1, 
+                   yend = Axis2),
+               color = "grey",
+               linewidth = 0.5) +
+
+  # Species labels
+  geom_text(data = loadings_df, 
+            aes(x = Axis1, 
+                y = Axis2,
+                label = annotation$species[match(rownames(loadings_df),
+                                                 rownames(annotation))]),
+            vjust = -0.5,
+            hjust = 0.5,
+            color = "red",
+            size = 3) +
+
+  scale_color_manual(values = colors) +
+  scale_fill_manual(values = colors) +
+  scale_shape_manual(values = shapes) +
+
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+
+  labs(x = paste0("Axis1 ", axis_variance[1], "%"),
+       y = paste0("Axis2 ", axis_variance[2], "%"),
+       title = "PCoA with variable loadings",
+       subtitle = "r ≥ 0.75, P ≤ 0.05")
+
+# Make it interactive
+ggplotly(p, tooltip = "text")
+
+```
+
+
 # Permutational multivariate analysis of variance (PERMANOVA)
+
+::: boxy
+
+**PERMANOVA** is a non-parametric method used to test whether the centroids of multivariate sample groups are significantly different based on a distance matrix. It is commonly applied in microbial community studies using Bray–Curtis or UniFrac distances.
+
+This method is available via the `adonis()` function from the `vegan` package.
+
+**When to use PERMANOVA?**
+
+PERMANOVA is useful for testing hypotheses like:
+
+- Do microbial communities differ significantly between sampling sites?
+
+- Is there a significant effect of treatment or time on overall community composition?
+
+Unlike ANOVA, PERMANOVA does not require normality and can be applied directly to distance matrices derived from community data.
+:::
+
 
 Before running a PERMANOVA test let's assess the data dispersion within the areas and within sampling dates. High dispersion of data within the groups could affect the analysis of variance test as this test assumes homogeneity of variance 
 
@@ -458,6 +548,29 @@ write.csv(adonis_table,
 ```{r session-info, echo=FALSE}
 # Print R version and loaded packages
 sessionInfo()
+```
+
+<div class="tip">
+  <strong>💡 Tip:</strong> You can plot all shapes in R ggplot.
+</div>
+
+```{r}
+# Create a data frame with all shape values from 0 to 25
+shapes_df <- data.frame(
+  shape = 0:25,
+  x = rep(1:6, length.out = 26),
+  y = rep(5:1, each = 6)[1:26]
+)
+
+# Plot all shapes
+ggplot(shapes_df, aes(x = x, y = y)) +
+  geom_point(aes(shape = factor(shape)), size = 4, fill = "blue", color = "black") +
+  geom_text(aes(label = shape), vjust = -1) +
+  scale_shape_manual(values = 0:25) +
+  theme_void() +
+  ggtitle("Available ggplot2 Shape Values (0–25)") +
+  theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 <!-- --------------------- Do not edit this and below ---------------------- -->

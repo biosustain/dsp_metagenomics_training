@@ -9,7 +9,8 @@ In the GitHub workspace, we will use the `base` conda environment, which you can
 with the following command:
 
 ```bash
-conda activate base
+python -m venv vuegen
+source vuegen/bin/activate
 ```
 
 ## Install the required packages

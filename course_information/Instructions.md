@@ -4,7 +4,8 @@
 
 To avoid installation and configuration long processes and possible issues we are going to deploy an environment for you containing Nextflow and its requirements.
 
-If you want to open directly a GitHub codespace for this specific repository click here: [![Open in GitHub Codespaces](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=927190371&skip_quickstart=true&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=EuropeWest)
+If you want to open directly a GitHub codespace for this specific repository click here: 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=927190371&skip_quickstart=true&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&geo=EuropeWest)
 
 Increase to 4 cores, which are needed to run taxprofiler. It says pay but you're not paying...
 

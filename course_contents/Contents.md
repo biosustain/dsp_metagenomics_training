@@ -1,6 +1,6 @@
 # Contents
 
-To follow the introduction to Nextflow you click in this [link]((https://github.com/biosustain/dsp_metagenomics_training/blob/main/course_contents/IntroMetagenomics.pdf).
+To follow the introduction to Nextflow you click in this [link](https://github.com/biosustain/dsp_metagenomics_training/blob/main/course_contents/IntroMetagenomics.pdf).
 
 To follow the hands-on tutorials open the different markdowns prepared in the codespace and copy paste and run the code in the markdown called WorkHere.Rmd.
 

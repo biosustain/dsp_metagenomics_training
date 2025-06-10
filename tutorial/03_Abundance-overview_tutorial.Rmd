@@ -1,0 +1,266 @@
+---
+title: "Abundance"
+subtitle: '`r format(Sys.Date(),format="%d-%b-%Y")`'
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+      print: false
+    toc_depth: 4
+    number_sections: true
+    highlight: tango
+    df_print: paged
+    code_folding: "show"
+    self_contained: true
+    keep_md: false
+    encoding: 'UTF-8'
+    css: "assets/report.css"
+    includes:
+      in_header: "assets/copy-button.html"
+    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
+---
+
+```{r,echo=FALSE,include=FALSE}
+#  variables
+rep_org <- "Data Science Platform" 
+rep_core3 <- "Alberto Pallejà Caro"
+rep_core_email3 <- "apca@biosustain.dtu.dk"
+rep_core2 <- "Andres Sebastian Ayala Ruano"
+rep_core_email2 <- "asaru@dtu.dk"
+rep_core <- "Juliana Assis"
+rep_core_email <- "jasge@dtu.dk"
+
+# Combine all responsibles into a single string
+rep_all <- paste0(
+  rep_core3, " (", rep_core_email3, ")<br>",
+  rep_core2, " (", rep_core_email2, ")<br>",
+  rep_core, " (", rep_core_email, ")"
+)
+```
+
+<br>
+
+::: boxy
+__Organisation:__ `r rep_org`  
+__Responsibles:__ `r paste0(rep_all," ")`  
+:::
+
+<br>
+
+
+<!-- ----------------------- Do not edit above this ----------------------- -->
+
+This markdown is to plot an abundance overview of the top-10 most abundant species of the dataset
+
+# R Packages that need to be installed
+```{r packages, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+```
+
+# Load data objects
+
+**Load species abundance, taxonomical annotation and metadata file**
+
+```{r}
+# Abundance table
+abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
+
+# Taxonomical annotation
+annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+
+# Metadata
+metadata <- read.table(file = "../data/metadata.tsv",
+                       header = TRUE, sep = "\t",
+                       quote = "",
+                       row.names = NULL)
+rownames(metadata) <- metadata$Sample
+```
+
+
+## Take only samples with sequencing and metadata information
+
+```{r}
+abundance <- abundance[rownames(abundance) %in% 
+                         rownames(metadata),]
+```
+
+## Creating a directory for the PCoA related results
+
+```{r}
+results_dir <- "results/report/03_Abundance-overview"
+
+dir.create(results_dir, 
+           recursive = TRUE, 
+           showWarnings = FALSE)
+```
+
+## Calculate total abundances per species
+
+```{r}
+taxa_total <- colSums(abundance)
+
+top_taxa <- names(sort(taxa_total, 
+                       decreasing = TRUE))[1:10]
+```
+
+## Filter to top 10 taxa
+
+```{r}
+abundance_top10 <- as.data.frame(abundance) %>% 
+  select(all_of(top_taxa))
+```
+
+## Convert to long format for ggplot
+
+- Move rownames (samples) to a column
+- Adding the species name for the plot
+- Adding the grouping columns: Area and Sampling
+
+
+```{r}
+abundance_top10$Sample <- rownames(abundance_top10)
+
+abundance_long <- abundance_top10 %>%
+  pivot_longer(cols = -Sample, 
+               names_to = "Species",
+               values_to = "Abundance")
+
+abundance_long$Species_name <- annotation$species[match(abundance_long$Species,
+                                                  rownames(annotation))]
+
+abundance_long$Area <- metadata$Area[match(abundance_long$Sample,
+                                           metadata$Sample)]
+
+abundance_long$Sampling <- metadata$Sampling[match(abundance_long$Sample,
+                                               metadata$Sample)]
+```
+
+## Stack bar plot of the top-10 most dominant species
+
+<div class="tip">
+  <strong>💡 Tip:</strong> Ensure Sample is a factor ordered by Sampling + Sample name (for visual grouping).
+</div>
+
+```{r}
+abundance_long <- abundance_long %>%
+  arrange(Sampling, Sample) %>%
+  mutate(Sample = factor(Sample, 
+                         levels = unique(Sample)))
+
+pbar <- ggplot(abundance_long, aes(x = Sample, 
+                                   y = Abundance,
+                                   fill = Species_name)) +
+  
+  geom_bar(stat = "identity", 
+           position = "stack", 
+           show.legend = TRUE) +
+  
+  scale_fill_brewer(palette = "Paired") +
+  
+  labs(title = "Top-10 Most Abundant Species",
+       x = "Sample",
+       y = "Relative Abundance (%)") +
+  
+  theme_bw() +
+  
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  
+  scale_y_continuous(expand = c(0, 0)) +
+  
+  scale_x_discrete(expand = c(0, 0)) +
+  
+  facet_wrap(. ~ Area, 
+             scales = "free")
+
+pbar
+
+# Save it as a png
+ggsave("results/report/03_Abundance-overview/01_top10_species.png",
+       width = 8, height = 6, dpi = 300)
+```
+
+## Let's summarize the same plot per Area and Sampling
+
+- Add Sample column and merge with metadata
+- Pivot to long format
+- Summarize abundance by Area + Sampling + Species
+- Adding the species name for the plot
+
+
+
+```{r}
+abundance_top10$Area <- metadata$Area
+abundance_top10$Sampling <- metadata$Sampling
+
+abundance_long <- abundance_top10 %>%
+  pivot_longer(cols = all_of(top_taxa),
+               names_to = "Species",
+               values_to = "Abundance")
+
+abundance_summary <- abundance_long %>%
+  group_by(Area, Sampling, Species) %>%
+  summarise(MeanAbundance = mean(Abundance), 
+            .groups = "drop")
+
+abundance_summary$Species_name <- 
+  annotation$species[match(abundance_summary$Species,
+                           rownames(annotation))]
+
+pbar_sum <- ggplot(abundance_summary, 
+                   aes(x = interaction(Area, 
+                                       Sampling, 
+                                       sep = " | "),
+                       y = MeanAbundance, 
+                       fill = Species_name)) +
+  
+  geom_bar(stat = "identity", 
+           position = "stack", 
+           show.legend = TRUE) +
+  
+  scale_fill_brewer(palette = "Paired") +
+  
+  theme_bw() +
+  
+  labs(title = "Mean Abundance of Top 10 Taxa by Area and Sampling",
+       x = "Area | Sampling",
+       y = "Mean Relative Abundance (%)") +
+  
+  theme(axis.text.x = element_text(hjust = 0.5),
+        strip.text = element_text(face = "bold")) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_discrete(expand = c(0, 0))
+
+pbar_sum
+
+# Save it as a png
+ggsave("results/report/03_Abundance-overview/02_top10_species_per_area_sampling.png", width = 8, height = 6, dpi = 300)
+
+```
+
+# Printing all package versions (good practice to ensure reproducibility)
+
+```{r session-info, echo=FALSE}
+# Print R version and loaded packages
+sessionInfo()
+```
+
+<!-- --------------------- Do not edit this and below ---------------------- -->
+
+</br>
+
+```{r,child="assets/_footer-lab.Rmd"}
+```
+
+```{r,eval=FALSE,echo=FALSE}
+# manually run this to render this document to HTML
+rmarkdown::render("Abundance.Rmd")
+# then run this to convert HTML to PDF (if needed)
+#pagedown::chrome_print("core-report.html",output="core-report.pdf")
+```

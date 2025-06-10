@@ -1,0 +1,362 @@
+---
+title: "Group-Comparison"
+subtitle: '`r format(Sys.Date(),format="%d-%b-%Y")`'
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+      print: false
+    toc_depth: 4
+    number_sections: true
+    highlight: tango
+    df_print: paged
+    code_folding: "show"
+    self_contained: true
+    keep_md: false
+    encoding: 'UTF-8'
+    css: "assets/report.css"
+    includes:
+      in_header: "assets/copy-button.html"
+    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
+---
+
+```{r,echo=FALSE,include=FALSE}
+#  variables
+rep_org <- "Data Science Platform" 
+rep_core3 <- "Alberto Pallejà Caro"
+rep_core_email3 <- "apca@biosustain.dtu.dk"
+rep_core2 <- "Andres Sebastian Ayala Ruano"
+rep_core_email2 <- "asaru@dtu.dk"
+rep_core <- "Juliana Assis"
+rep_core_email <- "jasge@dtu.dk"
+
+# Combine all responsibles into a single string
+rep_all <- paste0(
+  rep_core3, " (", rep_core_email3, ")<br>",
+  rep_core2, " (", rep_core_email2, ")<br>",
+  rep_core, " (", rep_core_email, ")"
+)
+```
+
+<br>
+
+::: boxy
+__Organisation:__ `r rep_org`  
+__Responsibles:__ `r paste0(rep_all," ")`  
+:::
+
+<br>
+
+
+<!-- ----------------------- Do not edit above this ----------------------- -->
+
+This markdown is to plot an abundance overview of the top-10 most abundant species of the dataset
+
+# R Packages that need to be installed
+```{r packages, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(FSA)
+```
+
+# Load data objects
+
+**Load species abundance, taxonomical annotation and metadata file**
+
+```{r}
+# Abundance table
+abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
+
+# Taxonomical annotation
+annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+
+# Metadata
+metadata <- read.table(file = "../data/metadata.tsv",
+                       header = TRUE, sep = "\t",
+                       quote = "",
+                       row.names = NULL)
+rownames(metadata) <- metadata$Sample
+
+# Take only samples with sequencing and metadata information
+abundance <- abundance[rownames(metadata),]
+```
+
+## Creating a directory for the related results
+
+```{r}
+results_dir <- "results/report/04_Group-comparison"
+
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+```
+
+# Areas comparison
+
+::: boxy
+As there are three areas, we will use a non-parametric test 
+(not assuming any distribution) for three groups: Kruskal-Wallis test.
+We need to run this test for all species comparing among Areas (1, 2, 3),
+therefore we need to code a loop to run the test for all species and later we need to correct for multiple testing (Bonferroni-Hochberg). 
+For the significant ones we will run a pot-hoc dunnTest to figure out 
+between which groups the differences exist.
+:::
+
+## 🧪 Kruskal-Wallis Test
+
+The Kruskal-Wallis test is a non-parametric method used to determine if there are statistically significant differences in the abundance of taxa across different groups (e.g., treatments, timepoints, compartments).
+
+---
+
+**🔗 Step 0: Merge Abundance Data with Metadata**
+
+Before performing the test, make sure your **abundance table** and **metadata** are merged appropriately so each sample has its associated group information.
+
+---
+
+**🔍 Step 1: Prevalence Filtering**
+
+Microbiome abundance tables are often sparse. To reduce noise from rare taxa (e.g., species found in only one or two samples), we apply a **prevalence filter**.
+
+We will **keep only taxa that are present (non-zero abundance) in at least 20% of the samples**.
+
+<div class="question">
+  <strong>❓ Question:</strong> How many species passed the filter?
+</div>
+
+
+**Step 1: Kruskal–Wallis test for each taxon**
+
+- An elegant way to run loops in R is using one of its "apply" functions
+
+```{r}
+abundance_df <- as.data.frame(cbind(abundance,
+                                    Area = metadata$Area,
+                                    Sample = metadata$Sample))
+
+taxa_cols <- setdiff(colnames(abundance_df), 
+                     c("Sample", 
+                       "Area"))
+#length(taxa_cols) 
+
+
+n_samples <- nrow(abundance_df)
+
+min_prevalence <- 0.20 * n_samples
+
+
+abundance_taxa_only <- abundance_df[, taxa_cols]
+
+prevalent_taxa <- sapply(abundance_taxa_only[, taxa_cols],
+                         function(x) sum(x > 0)) >= min_prevalence
+
+filtered_taxa <- names(prevalent_taxa[prevalent_taxa])
+
+kruskal_results <- lapply(filtered_taxa, 
+                          function(taxon) {
+                            
+  test_data <- abundance_df[, c(taxon,"Area")]
+  colnames(test_data) <- c("Abundance","Area")
+  kruskal <- kruskal.test(Abundance ~ Area, 
+                          data = test_data)
+  data.frame(
+    Taxon = taxon,
+    p_value = kruskal$p.value,
+    statistic = kruskal$statistic
+  )
+})
+
+kruskal_df <- do.call(rbind, 
+                      kruskal_results)
+rownames(kruskal_df) <- kruskal_df$Taxon
+```
+
+## Multiple testing correction
+
+Adjusting for multiple testing by Bonferroni and Hochberg 
+method (False Discovery rate)
+
+
+**Filter significant taxa (e.g., FDR < 0.05)**
+
+```{r}
+kruskal_df$adj_p_value <- p.adjust(kruskal_df$p_value, 
+                                   method = "BH")
+
+significant_taxa <- kruskal_df %>% 
+  filter(adj_p_value < 0.05)
+
+significant_taxa$Species_name <-
+  annotation$species[match(rownames(significant_taxa),
+                           rownames(annotation))]
+```
+
+
+```{r sample_Load, echo=FALSE, include=TRUE, eval=TRUE}
+DT::datatable(data = significant_taxa, 
+              rownames = FALSE, 
+              extensions = c('Buttons', 'Scroller'), 
+              options = list(dom = 'Bfrtip', 
+                             buttons = c('copy', 'csv'),
+                             deferRender = TRUE, 
+                             scrollX = T,
+                             scrollX = T,
+                             scrollY = 200,
+                             scroller = TRUE,
+                             caption = 'Sample metadata'))
+```
+
+## Run Dunn’s test for significant taxa
+
+```{r, warning=FALSE}
+dunn_results <- lapply(significant_taxa$Taxon, 
+                       function(taxon) {
+                         
+  test_data <- abundance_df[, c(taxon, "Area")]
+  colnames(test_data) <- c("Abundance", "Area")
+  test_data$Abundance <- as.numeric(test_data$Abundance)
+
+  # Run dunnTest only if we have >1 group with non-zero data
+  tryCatch({
+    dunn <- dunnTest(Abundance ~ Area, 
+                     data = test_data, 
+                     method = "bh")
+    
+    dunn_df <- dunn$res
+    
+    dunn_df$Taxon <- taxon
+    
+    return(dunn_df)
+  }, error = function(e) {
+    message(paste("Skipping", 
+                  taxon, "due to error:", e$message))
+  })
+})
+
+# Combine Dunn test results
+dunn_df <- do.call(rbind, dunn_results)
+dunn_df$Species_name <-
+  annotation$species[match(dunn_df$Taxon,
+                           rownames(annotation))]
+```
+
+## Let's print the statistics results
+
+- Let's save the statistics for Kruskal-Wallis test 
+- ordered by adj_p_value and with more logical order of the columns
+
+```{r}
+
+significant_taxa <- significant_taxa %>%
+  arrange(adj_p_value) %>%
+  relocate(Taxon, 
+           Species_name, 
+           statistic, 
+           p_value, 
+           adj_p_value)
+
+write.csv(significant_taxa,
+    file = "results/report/04_Group-comparison/01_kruskal-wallis-results.csv",
+    row.names = TRUE, quote = FALSE)
+
+write.csv(dunn_df,
+  file = "results/report/04_Group-comparison/02_post-hoc-dunn-results.csv",
+  row.names = TRUE, quote = FALSE)
+```
+
+# Plotting the top-20 significant species
+
+**Get top 20 taxa from Kruskal–Wallis**
+
+```{r}
+top_taxa <- kruskal_df %>%
+  arrange(adj_p_value) %>%
+  slice(1:20) %>%
+  pull(Taxon)
+```
+
+## Prepare long-format data with top taxa
+
+```{r}
+abundance_df$Sampling <- metadata$Sampling
+abundance_long <- abundance_df %>%
+  select(Sample, 
+         Area, 
+         Sampling, 
+         all_of(top_taxa)) %>%
+  pivot_longer(
+    cols = all_of(top_taxa),
+    names_to = "Taxon",
+    values_to = "Abundance"
+    ) 
+```
+
+## Order taxa by significance and fix data-types
+
+```{r}
+abundance_long$Abundance <- as.numeric(abundance_long$Abundance)
+abundance_long$Species_name <-
+  annotation$species[match(abundance_long$Taxon,
+                           rownames(annotation))]
+
+abundance_long$Species_name <- factor(abundance_long$Species_name, 
+                    levels = unique(abundance_long$Species_name))
+
+```
+
+## Plot heatmap with ggplot2
+
+```{r}
+heatmap_top20 <- ggplot(abundance_long, 
+                        aes(x = Sample, 
+                            y = Species_name,
+                        fill = log10(Abundance+0.000001))) +
+  
+  geom_tile(color = "white", 
+            size = 0.2) +
+  
+  scale_fill_viridis_c(option = "B", 
+                       name = "Abundance\n(log10)") +
+  
+  facet_grid(. ~ Area + Sampling, 
+             scales = "free") +
+  
+  theme_bw() +
+  
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid = element_blank(),
+    strip.text = element_text(face = "bold"),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_blank()
+  )
+
+heatmap_top20
+
+# Save it as a png
+ggsave("results/report/04_Group-comparison/03_significants_heatmap.png",
+       width = 8, height = 8, dpi = 300)
+```
+
+# Printing all package versions (good practice to ensure reproducibility)
+```{r session-info, echo=FALSE}
+sessionInfo()
+```
+
+<!-- --------------------- Do not edit this and below ---------------------- -->
+
+</br>
+
+```{r,child="assets/_footer-lab.Rmd"}
+```
+
+```{r,eval=FALSE,echo=FALSE}
+# manually run this to render this document to HTML
+rmarkdown::render("Group-Comparison.Rmd")
+# then run this to convert HTML to PDF (if needed)
+#pagedown::chrome_print("core-report.html",output="core-report.pdf")
+```

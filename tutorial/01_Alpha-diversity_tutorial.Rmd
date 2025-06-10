@@ -1,0 +1,349 @@
+---
+title: "Alpha Diversity"
+subtitle: '`r format(Sys.Date(),format="%d-%b-%Y")`'
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+      print: false
+    toc_depth: 4
+    number_sections: true
+    highlight: tango
+    df_print: paged
+    code_folding: "show"
+    self_contained: true
+    keep_md: false
+    encoding: 'UTF-8'
+    css: "assets/report.css"
+    includes:
+      in_header: "assets/copy-button.html"
+    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
+---
+
+```{r,echo=FALSE,include=FALSE, warning=FALSE}
+#  variables
+rep_org <- "Data Science Platform" 
+rep_core3 <- "Alberto Pallejà Caro"
+rep_core_email3 <- "apca@biosustain.dtu.dk"
+rep_core2 <- "Andres Sebastian Ayala Ruano"
+rep_core_email2 <- "asaru@dtu.dk"
+rep_core <- "Juliana Assis"
+rep_core_email <- "jasge@dtu.dk"
+
+# Combine all responsibles into a single string
+rep_all <- paste0(
+  rep_core3, " (", rep_core_email3, ")<br>",
+  rep_core2, " (", rep_core_email2, ")<br>",
+  rep_core, " (", rep_core_email, ")"
+)
+```
+
+<br>
+
+::: boxy
+__Organisation:__ `r rep_org`  
+__Responsibles:__ `r paste0(rep_all," ")`  
+:::
+
+<br>
+<!-- ----------------------- Do not edit above this ----------------------- -->
+
+
+This markdown is to calculate the **alpha diversity** of the **samples** as **Richness** (number of species detected per sample) 
+and as **Shannon diversity index** (accounts for number of species detected). 
+These calculations are based on the species abundance table. Here we will plot Richness and Shannon index,
+and we will compare these diversity metrics between the study groups.
+
+
+**🧬 Alpha Diversity: Richness vs. Shannon Index**
+
+**Alpha diversity** refers to the diversity **within a single sample or environment**. It captures two main aspects:
+
+- **Richness**:  
+  The **number of different species** (or operational taxonomic units, OTUs) present in a sample.  
+  👉 It tells you *how many* types of organisms there are, but not how evenly they are distributed.
+
+- **Shannon Diversity Index**:  
+  A metric that combines **richness** and **evenness** (the relative abundance of species).  
+  👉 It increases when both the number of species and the balance between their abundances increase.  
+  Mathematically, it is calculated as:
+
+  $$
+  H' = -\sum (p_i \times \log(p_i))
+  $$
+
+  Where:
+\( H' \)  is the Shannon Diversity Index. 
+\( pi \)  is the proportion of individuals belonging to species i. 
+\( ln \)  is the natural logarithm. 
+
+**Interpretation**: The value of H' typically ranges from 0 to a maximum value (which depends on the number of species and their abundance). A **higher value** indicates **greater diversity**, while a **lower value** indicates **less diversity**
+
+---
+
+::: boxy
+ 📝 Summary
+
+| Metric     | What it measures       | Sensitive to         | Value range           |
+|------------|------------------------|------------------------|------------------------|
+| Richness   | Number of species       | Rare species           | 1 to *N* (total taxa)  |
+| Shannon    | Richness + Evenness     | Common + rare species  | ≥0 (higher = more diverse) |
+:::
+
+# Packages
+Loading libraries needed. They were installed in the codespace when developed.
+
+```{r packages, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(patchwork)
+library(vegan)
+library(FSA)
+```
+
+# Load data objects
+
+**Load species abundance, taxonomical annotation and metadata file**
+
+```{r, warning=FALSE}
+abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
+
+# Taxonomical annotation
+annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+
+# Metadata
+metadata <- read.table(file = "../data/metadata.tsv", header = TRUE,
+                       sep = "\t",
+                       quote = "",
+                       row.names = NULL)
+rownames(metadata) <- metadata$Sample
+
+
+```
+
+
+<div class="tip">
+  <strong>💡 Tip:</strong> You can use the command `dim` to visualize the dimension of the object. Try it yourself.
+</div>
+
+```{r, eval=FALSE, warning=FALSE}
+dim(abundance)
+dim(metadata)
+```
+
+
+## Take only samples with sequencing and metadata information
+
+```{r, warning=FALSE}
+abundance <- abundance[rownames(metadata), ]
+```
+
+## Creating a directory for the related results
+
+```{r, warning=FALSE}
+results_dir <- "results/report/01_Alpha-diversity"
+
+dir.create(results_dir, 
+           recursive = TRUE, 
+           showWarnings = FALSE)
+```
+
+# Calculate Alpha Diversity 
+
+
+**We calculate Richness and Shannon index using vegan package and added both to a dataframe**
+
+
+<div class="note">
+<strong>📘 Note:</strong> vegan: an R package for community ecologists [Vegan](https://github.com/vegandevs/vegan).
+</div>
+
+
+>Ordination methods, diversity analysis and other functions for community and vegetation ecologists
+
+
+```{r, warning=FALSE}
+alpha_div <- data.frame(
+  Richness = rowSums(abundance > 0),
+  Shannon = vegan::diversity(abundance, 
+                             index = "shannon"),
+  row.names = rownames(abundance)
+)
+```
+
+## Plot alpha diversity measurements
+
+**Prepare plot dataframe**
+
+We join the alpha diversity data with the grouping file
+(often called metadata)
+
+```{r, warning=FALSE}
+plot_data <- cbind(alpha_div, 
+                   metadata$Area, 
+                   metadata$Sampling,
+  paste(metadata$Area, metadata$Sampling, 
+        sep = "_")
+)
+
+colnames(plot_data) <-
+  c("Richness", "Shannon", "Area", "Sampling_Date", "Area_Sampling")
+
+write.csv(plot_data, file = "results/report/01_Alpha-diversity/01_Alpha_diversity.csv",
+          row.names = TRUE, 
+          quote = FALSE)
+```
+
+## Create boxplots 
+
+```{r, warning=FALSE}
+
+colors <- c("1_M2" = "#349F2C", "1_M3" = "#BAE4B3",
+            "2_M2" = "#0F5096", "2_M3" = "#1779E3",
+            "3_M2" = "#CA0020", "3_M3" = "#FF8784")
+
+richness_boxplot <- ggplot(plot_data, 
+                           aes(x = Sampling_Date, 
+                               y = Richness)) +
+  
+  geom_boxplot(aes(fill = Area_Sampling), 
+               outliers = FALSE, 
+               alpha = 0.7) +
+  
+  geom_point(aes(fill = Area_Sampling), 
+             shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  
+  theme_bw() +
+  
+  theme(legend.position = "none", 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  
+  scale_fill_manual(values = colors) +
+  
+  labs(x = "Sampling", 
+       y = "Richness (species detected)") +
+  facet_grid(. ~ Area)
+```
+
+
+## Shannon
+
+
+```{r, warning=FALSE}
+
+shannon_boxplot <- ggplot(plot_data, 
+                          aes(x = Sampling_Date, 
+                              y = Shannon)) +
+  
+  geom_boxplot(aes(fill = Area_Sampling), 
+               outliers = FALSE, 
+               alpha = 0.7) +
+  
+  geom_point(aes(fill = Area_Sampling), 
+             shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  
+  theme_bw() +
+  
+  theme(legend.position = "none", 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  
+  scale_fill_manual(values = colors) +
+  
+  labs(x = "Sampling", 
+       y = "Shannon index") +
+  
+  facet_grid(. ~ Area)
+
+richness_boxplot + 
+  shannon_boxplot
+```
+
+### Save
+
+```{r, warning=FALSE}
+ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.png",
+       width = 8, 
+       height = 4, 
+       dpi = 300)
+```
+
+# Statistical comparison
+
+We have three areas that we want to compare,
+we will use a non-parametric test for more than 2 groups: Kruskal-Wallis.
+We are testing whether there are differences among the three areas
+
+```{r, warning=FALSE}
+kruskal.test(Richness ~ Area, 
+             plot_data)
+```
+
+<div class="question">
+  <strong>❓ Question:</strong> Is Richness  significantly different among the areas?
+</div>
+
+::: boxy
+When a Kruskal-Wallis test shows that there are significant differences 
+between groups, you need a post-hoc test to determine which specific groups differ. Since Kruskal-Wallis is non-parametric, the appropriate post-hoc  test is also a non-parametric - dunnTest. We correct for multiple testing using Benjamini-Hochberg (BH) procedure, which is a method used to control the False Discovery Rate (FDR) in multiple hypothesis testing
+:::
+
+## Perform post-hoc Dunn's test
+
+```{r, warning=FALSE}
+dunnTest(Richness ~ Area, 
+         plot_data, 
+         method = "bh")
+```
+
+**Differences occur between 1-3 and 2-3**
+
+<div class="question">
+  <strong>❓ Question:</strong> Is it the same for Shannon?</div>
+
+
+
+```{r, warning=FALSE}
+kruskal.test(Shannon ~ Area, 
+             plot_data)
+```
+
+**Almost significant!**
+
+When it is not significant, we don't needed to test between groups, but lets double check:
+
+```{r, warning=FALSE}
+dunnTest(Shannon ~ Area, 
+         plot_data, 
+         method = "bh")
+```
+
+**No significant differences, but comparison of 1-3 is almost significant.**
+
+
+
+# Printing all package versions (good practice to ensure reproducibility)
+
+```{r session-info, echo=FALSE, warning=FALSE}
+# Print R version and loaded packages
+sessionInfo()
+```
+
+<!-- --------------------- Do not edit this and below ---------------------- -->
+
+</br>
+
+```{r,child="assets/_footer-lab.Rmd"}
+```
+
+```{r,eval=FALSE,echo=FALSE}
+# manually run this to render this document to HTML
+rmarkdown::render("AlphaDiversity.Rmd")
+# then run this to convert HTML to PDF (if needed)
+#pagedown::chrome_print("core-report.html",output="core-report.pdf")
+```

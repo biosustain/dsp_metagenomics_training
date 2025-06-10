@@ -1,0 +1,28 @@
+---
+title: "Abundance overview"
+author: "YOUR NAME HERE"
+date: "`r format(Sys.time())`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: show
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+# title
+
+## subtitle
+
+```{r}
+
+```
+
+# Printing all package versions (good practice to ensure reproducibility)
+```{r session-info, echo=FALSE}
+# Print R version and loaded packages
+sessionInfo()
+```

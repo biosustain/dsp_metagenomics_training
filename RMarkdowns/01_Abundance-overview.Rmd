@@ -44,11 +44,26 @@ metadata <- read.table(file = "data/metadata.tsv",
 rownames(metadata) <- metadata$Sample
 dim(metadata)
 
+<<<<<<< Updated upstream
+
+```
+
+
 # Take only samples with sequencing and metadata information
+
+```{r}
+=======
+# Take only samples with sequencing and metadata information
+>>>>>>> Stashed changes
 abundance <- abundance[rownames(abundance) %in% rownames(metadata),]
 dim(abundance)
 ```
 
+<<<<<<< Updated upstream
+
+
+=======
+>>>>>>> Stashed changes
 # Creating a directory for the PCoA related results
 ```{r}
 results_dir <- "results/report/03_Abundance-overview"

@@ -69,9 +69,17 @@ pcoa_result <- cmdscale(bray_curtis, eig = TRUE, k = 2)
 
 
 ## Extract eigenvalues and points
+<<<<<<< Updated upstream
+
+**Only positive eigenvalues contribute to variance explained**
+
+```{r}
+eig_vals <- pcoa_result$eig
+=======
 ```{r}
 eig_vals <- pcoa_result$eig
 # Only positive eigenvalues contribute to variance explained
+>>>>>>> Stashed changes
 eig_vals <- eig_vals[eig_vals > 0]
 var_explained <- eig_vals / sum(eig_vals)
 axis_variance <- round(var_explained[1:2] * 100)
@@ -83,10 +91,20 @@ colnames(scores) <- c("Axis1", "Axis2", "Area", "Sampling")
 ```
 
 ## Step 3: Extract loading data
+<<<<<<< Updated upstream
+
+To calculate variable loadings (contributions of the original variables 
+to the PCoA axes), you can use the envfit() function in the vegan package.
+Fit environmental vectors to the ordination
+
+
+```{r}
+=======
 ```{r}
 # To calculate variable loadings (contributions of the original variables 
 # to the PCoA axes), you can use the envfit() function in the vegan package.
 # Fit environmental vectors to the ordination
+>>>>>>> Stashed changes
 loadings <- envfit(pcoa_result, abundance, perm = 999)
 
 loadings_df <- as.data.frame(loadings$vectors$arrows[loadings$vectors$r >= 0.75 & 
@@ -158,7 +176,12 @@ ggsave("results/report/02_Beta-diversity/02_PCoA_with_loadings.png",
 Before running a PERMANOVA test let's assess the data dispersion within the areas
 and within sampling dates. High dispersion of data within the groups could affect 
 the analysis of variance test as this test assumes homogeneity of variance 
+<<<<<<< Updated upstream
+
+**Dispersion for Area**
+=======
 ## Dispersion for Area
+>>>>>>> Stashed changes
 
 ### Distance to centroid (dispersion)
 ```{r}

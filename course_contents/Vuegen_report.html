@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Analysis reporting with Vuegen &#8212; Metagenomics course, Data Science Platform (DSP)  documentation</title>
+    <title>Reporting with VueGen &#8212; Metagenomics course, Data Science Platform (DSP)  documentation</title>
   
   
   
@@ -178,7 +178,7 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="Contents.html">Contents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Data_processing.html">Metagenomics data processing</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Analysis reporting with Vuegen</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reporting with VueGen</a></li>
 </ul>
 
     </div>
@@ -332,7 +332,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Analysis reporting with Vuegen</h1>
+    <h1>Reporting with VueGen</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -356,11 +356,11 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="analysis-reporting-with-vuegen">
-<h1>Analysis reporting with Vuegen<a class="headerlink" href="#analysis-reporting-with-vuegen" title="Link to this heading">#</a></h1>
-<p>VueGen is a Python package that automates the creation of scientific reports.</p>
-<p>With VueGen, users can produce reports by simply specifying a directory containing output files, such as plots, tables, networks, Markdown text, HTML components, and API calls, along with the report format. Supported formats include documents (PDF, HTML, DOCX, ODT), presentations (PPTX, Reveal.js), Jupyter notebooks, and Streamlit web applications.</p>
-<p>In the GitHub workspace, we will use the base conda environment which you can activate
+  <section class="tex2jax_ignore mathjax_ignore" id="reporting-with-vuegen">
+<h1>Reporting with VueGen<a class="headerlink" href="#reporting-with-vuegen" title="Link to this heading">#</a></h1>
+<p><a class="reference external" href="https://github.com/Multiomics-Analytics-Group/vuegen" rel="noreferrer" target="_blank">VueGen</a> is a tool that automates the creation of <strong>reports</strong> from bioinformatics outputs, allowing researchers with minimal coding experience to communicate their results effectively.</p>
+<p>With VueGen, users can produce reports by simply specifying a directory containing output files, such as plots, tables, networks, Markdown text, HTML components, and API calls, along with the report format. Supported formats include <strong>documents</strong> (PDF, HTML, DOCX, ODT), <strong>presentations</strong> (PPTX, Reveal.js), <strong>Jupyter notebooks</strong>, and <a class="reference external" href="https://streamlit.io/" rel="noreferrer" target="_blank">Streamlit</a> <strong>web applications</strong>.</p>
+<p>In the GitHub workspace, we will use the <code class="docutils literal notranslate"><span class="pre">base</span></code> conda environment, which you can activate
 with the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>base
 </pre></div>
@@ -368,7 +368,7 @@ with the following command:</p>
 <section id="install-the-required-packages">
 <h2>Install the required packages<a class="headerlink" href="#install-the-required-packages" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://vuegen.readthedocs.io" rel="noreferrer" target="_blank">vuegen</a> for the report generation (developed by Henry Webel from DSP and Sebastian Ayala and Alberto Santos from MoNA at DTU Biosustain)</p></li>
+<li><p><a class="reference external" href="https://github.com/Multiomics-Analytics-Group/vuegen" rel="noreferrer" target="_blank">VueGen</a> for the report generation (developed by Henry Webel from DSP and Sebastian Ayala and Alberto Santos from MoNA at DTU Biosustain)</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>vuegen
 </pre></div>
@@ -376,25 +376,24 @@ with the following command:</p>
 </section>
 <section id="vuegen-report">
 <h2>VueGen Report<a class="headerlink" href="#vuegen-report" title="Link to this heading">#</a></h2>
-<p>We saved some of the analyses (plots and tables) from the R markdown to <code class="docutils literal notranslate"><span class="pre">results/report</span></code> folder.</p>
-<p>You can use the following command to generate a VueGen report from them:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vuegen<span class="w"> </span>-dir<span class="w"> </span>results/report
+<p>We saved some of the analyses (plots and tables) from the R markdown files in the <code class="docutils literal notranslate"><span class="pre">results/report</span></code> folder.</p>
+<p>You can use the following command to generate a VueGen report (Streamlit web application in this case) from them:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vuegen<span class="w"> </span>--directory<span class="w"> </span>results/report<span class="w"> </span>--report_type<span class="w"> </span>streamlit<span class="w"> </span>
 </pre></div>
 </div>
-<p>This will create a streamlit app in the <code class="docutils literal notranslate"><span class="pre">streamlit_report</span></code> folder. Check the options
-availble for the command line tool vuegen with the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vuegen</span> <span class="o">-</span><span class="n">h</span>
+<p>This will create the scripts to build a Streamlit web application in the <code class="docutils literal notranslate"><span class="pre">streamlit_report</span></code> folder. Now, you can run the app with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>streamlit<span class="w"> </span>run<span class="w"> </span>streamlit_report/sections/report_manager.py
 </pre></div>
 </div>
-<p>Create and start the streamlit app with the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vuegen<span class="w"> </span>-dir<span class="w"> </span>results/report<span class="w"> </span>-st_autorun
+<p>You can check additional report types supported by VueGen, and other options with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vuegen<span class="w"> </span>-h
 </pre></div>
 </div>
 </section>
 <section id="further-information-about-vuegen">
 <h2>Further information about VueGen<a class="headerlink" href="#further-information-about-vuegen" title="Link to this heading">#</a></h2>
-<p>If you are interested to know more about VueGen and use it for your own research projects, check out some tutorials in youtube
-<a class="reference external" href="https://www.youtube.com/playlist?list=PLTbkQyef1c2S3qGzzva_JLlgdwsXjHCHH" rel="noreferrer" target="_blank">tutorials on youtube</a>, and also our biorxiv <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2025.03.05.641152v1.full.pdf" rel="noreferrer" target="_blank">paper</a></p>
+<p>If you are interested to know more about VueGen and use it for your own research projects, check out its <a class="reference external" href="https://github.com/Multiomics-Analytics-Group/vuegen" rel="noreferrer" target="_blank">GitHub repository</a>, some tutorials in YouTube
+<a class="reference external" href="https://www.youtube.com/playlist?list=PLTbkQyef1c2S3qGzzva_JLlgdwsXjHCHH" rel="noreferrer" target="_blank">tutorials on youtube</a>, and also our biorxiv <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2025.03.05.641152v1.full.pdf" rel="noreferrer" target="_blank">paper</a>.</p>
 </section>
 </section>
 

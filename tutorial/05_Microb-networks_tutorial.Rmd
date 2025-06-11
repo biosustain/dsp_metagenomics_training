@@ -70,16 +70,16 @@ library(dplyr)
 ## Load data
 ```{r, warning=FALSE}
 # Abundance table
-abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 dim(abundance)
 
 # Taxonomical annotation
-annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = "data/MetaphlanAnnotations_Species.rds")
 dim(annotation)
 
 # Metadata
-metadata <- read.table(file = "../data/metadata.tsv",
+metadata <- read.table(file = "data/metadata.tsv",
                        header = TRUE, sep = "\t",
                        quote = "",
                        row.names = NULL)

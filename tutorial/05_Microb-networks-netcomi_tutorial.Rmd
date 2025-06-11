@@ -154,7 +154,6 @@ We can also use the`plotHeat` function to plot the estimated associations.
 ```{r}
 # Generate the plot
 heatmap <- plotHeat(net_cclasso$assoMat1, textUpp = "none", textLow = "none")
-heatmap
 
 # Open and close PNG device
 png(file.path(results_dir, "2_cclasso_network_association_heatmap.png"), width = 2000, height = 1800, res = 150)
@@ -202,7 +201,6 @@ summary(props_cclasso, numbNodes = 5L)
 Finally, we can visualize the network using the [`plot()`](https://netcomi.de/reference/plot) function.
 
 ```{r}
-
 # Generate the plot
 net_viz <- plot(props_cclasso,
      # Network
@@ -211,7 +209,7 @@ net_viz <- plot(props_cclasso,
      title1 = "CCLasso Network",
      showTitle = TRUE,
      rmSingles = TRUE,
-     cexTitle = 2.3,
+     cexTitle = 1,
 
      # Nodes 
      nodeColor = "cluster", 
@@ -227,10 +225,8 @@ net_viz <- plot(props_cclasso,
 )
 
 legend(0.7, 1.1, title = "Estimated associations:", legend = c("+","-"), 
-        col = c("#ac1214","#0d1fad"), inset = 0.02, cex = 1.7, lty = 1, lwd = 3.5, 
+        col = c("#ac1214","#0d1fad"), inset = 0.02, cex = 0.8, lty = 1, lwd = 3.5, 
         bty = "n", horiz = TRUE, y.intersp = 0.7)
-
-net_viz
 
 # Open and close PNG device
 png(file.path(results_dir, "3_cclasso_network.png"), width = 2500, height = 2300, res = 150)

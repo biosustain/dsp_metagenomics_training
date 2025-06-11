@@ -1,31 +1,70 @@
 ---
-title: "Microbial Association Networks using NetCoMi"
-author: "Sebastian Ayala Ruano"
-date: "`r format(Sys.time())`"
-output: 
-  html_document:
+title: "Microbial Association Network with NetCoMi"
+subtitle: '`r format(Sys.Date(),format="%d-%b-%Y")`'
+output:
+  bookdown::html_document2:
     toc: true
-    toc_depth: 3
-    toc_float: true
-    code_folding: show
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+      print: false
+    toc_depth: 4
+    number_sections: true
+    highlight: tango
     df_print: paged
-editor_options: 
-  chunk_output_type: console
+    code_folding: "show"
+    self_contained: true
+    keep_md: false
+    encoding: 'UTF-8'
+    css: "assets/report.css"
+    includes:
+      in_header: "assets/copy-button.html"
+    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
 ---
+
+```{r,echo=FALSE,include=FALSE}
+#  variables
+rep_org <- "Data Science Platform" 
+rep_core3 <- "Alberto Pallejà Caro"
+rep_core_email3 <- "apca@biosustain.dtu.dk"
+rep_core2 <- "Sebastian Ayala Ruano"
+rep_core_email2 <- "asaru@dtu.dk"
+rep_core <- "Juliana Assis"
+rep_core_email <- "jasge@dtu.dk"
+
+# Combine all responsibles into a single string
+rep_all <- paste0(
+  rep_core3, " (", rep_core_email3, ")<br>",
+  rep_core2, " (", rep_core_email2, ")<br>",
+  rep_core, " (", rep_core_email, ")"
+)
+```
+
+<br>
+
+::: boxy
+__Organisation:__ `r rep_org`  
+__Responsibles:__ `r paste0(rep_all," ")`  
+:::
+
+<br>
+
+
+<!-- ----------------------- Do not edit above this ----------------------- -->
 
 This markdown is to create microbial association networks (MANs) based on the abundance 
 data using the the [NetCoMi](https://github.com/stefpeschel/NetCoMi) package.
 
-## 1. Work environment setup 
+# Work environment setup 
 
-### 1.1. Import R Packages
+## Import R Packages
 ```{r packages, message=FALSE, warning=FALSE}
 library(NetCoMi)
 library(ggplot2)
 library(tidyr)
 ```
 
-### 1.2. Load data
+## Load data
 ```{r}
 # Abundance table
 abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
@@ -52,23 +91,21 @@ dim(abundance)
 colnames(abundance) <- annotation$species[match(colnames(abundance), rownames(annotation))]
 ```
 
-### 1.3. Create a directory to store the results
+## Create a directory to store the results
 ```{r}
 results_dir <- "results/report/05_Microbial-association-networks"
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
 
-## 2. Microbial association network (MAN) with CCLasso as association measure
+# Network construction
 
-We create a MAN with the [Correlation inference for Compositional data through Lasso (CCLasso)](https://netcomi.de/reference/cclasso) 
+We create a Microbial association network (MAN) with the [Correlation inference for Compositional data through Lasso (CCLasso)](https://netcomi.de/reference/cclasso) 
 method. **CCLasso** estimates positive definite Pearson correlations from log-ratio variances using 
 a **latent variable model** based on least squares with an L1 penalty. 
 [Aitchison](https://doi.org/10.1111/j.2517-6161.1982.tb01195.x) introduced log-ratios as a basis for analyzing 
 compositional data, as these values are independent of the total sum of counts. Consequently, CCLasso addresses 
 the compositional nature of metagenomics data.
-
-### 2.1. Network construction
 
 The [`netConstruct()`](https://netcomi.de/reference/netconstruct) function is used to build the network. 
 To make the calculations feasible, we filter the taxa to the 50 most abundant species using the `filtTax` 
@@ -115,18 +152,17 @@ write.table(net_cclasso$edgelist1,
 We can also use the`plotHeat` function to plot the estimated associations.
 
 ```{r}
-# Open PNG device
-png(file.path(results_dir, "2_cclasso_network_association_heatmap.png"), width = 2000, height = 1800, res = 150)
-
 # Generate the plot
-plotHeat(net_cclasso$assoMat1, textUpp = "none", textLow = "none")
+heatmap <- plotHeat(net_cclasso$assoMat1, textUpp = "none", textLow = "none")
+heatmap
 
-# Close device
+# Open and close PNG device
+png(file.path(results_dir, "2_cclasso_network_association_heatmap.png"), width = 2000, height = 1800, res = 150)
 dev.off()
 ```
 
 
-### 2.2. Network analysis  
+# Network analysis  
 
 The [`netAnalyze()`](https://netcomi.de/reference/netanalyze) function is used for analyzing the MAN.
 
@@ -161,16 +197,14 @@ props_cclasso <- netAnalyze(net_cclasso,
 summary(props_cclasso, numbNodes = 5L)
 ```
 
-### 2.3. Network visualization
+# Network visualization
 
 Finally, we can visualize the network using the [`plot()`](https://netcomi.de/reference/plot) function.
 
 ```{r}
-# Open PNG device
-png(file.path(results_dir, "3_cclasso_network.png"), width = 2500, height = 2300, res = 150)
 
 # Generate the plot
-plot(props_cclasso,
+net_viz <- plot(props_cclasso,
      # Network
      layout = "spring",
      repulsion = 0.9,
@@ -196,12 +230,31 @@ legend(0.7, 1.1, title = "Estimated associations:", legend = c("+","-"),
         col = c("#ac1214","#0d1fad"), inset = 0.02, cex = 1.7, lty = 1, lwd = 3.5, 
         bty = "n", horiz = TRUE, y.intersp = 0.7)
 
-# Close device
+net_viz
+
+# Open and close PNG device
+png(file.path(results_dir, "3_cclasso_network.png"), width = 2500, height = 2300, res = 150)
 dev.off()
 ```
 
-## 3. Further information
+# Further information
 
+::: boxy
 The [Network learning & analysis](https://microbiome.github.io/OMA/docs/devel/pages/network_learning) chapter 
 from the [Orchestrating Microbiome Analysis Book](https://microbiome.github.io/OMA/docs/devel/) provides more 
 details about all the steps and consideration to take when creating and analyzing microbial association networks (MANs).
+:::
+
+<!-- --------------------- Do not edit this and below ---------------------- -->
+
+</br>
+
+```{r,child="assets/_footer-lab.Rmd"}
+```
+
+```{r,eval=FALSE,echo=FALSE}
+# manually run this to render this document to HTML
+rmarkdown::render("Group-Comparison.Rmd")
+# then run this to convert HTML to PDF (if needed)
+#pagedown::chrome_print("core-report.html",output="core-report.pdf")
+```

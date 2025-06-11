@@ -325,11 +325,8 @@ vertex_size <- rescale_base(log1p(deg), target_range = c(1.5, 3.5))
 edge_weights <- abs(E(graph)$weight)
 edge_width <- rescale_base(edge_weights, target_range = c(0.5, 2))
 
-# Open PNG device
-png(file.path(results_dir, "5_pearson_network_igraph_plot.png"), width = 2500, height = 2300, res = 150)
-
 # Plot the network
-plot(
+net_viz <- plot(
   graph,
   vertex.size = vertex_size,
   vertex.color = clusters_vec,
@@ -342,7 +339,10 @@ plot(
   main = "Pearson Microbial Association Network"
 )
 
-# Close device
+net_viz
+
+# Open and close PNG device
+png(file.path(results_dir, "5_pearson_network_igraph_plot.png"), width = 2500, height = 2300, res = 150)
 dev.off()
 ```
 

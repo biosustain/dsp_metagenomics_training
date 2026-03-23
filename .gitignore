@@ -13,3 +13,4 @@ tutorial/assets
 # Ignore nextflow files
 .nextflow*
 work/
+.Rproj.user

@@ -1,13 +1,13 @@
 # Timing
 
-This is the agenda for the course on Wednesday 11th June 2025
+This is the agenda for the course on Wednesday 6th May 2026
 
-Course duration approximately: 8:30 - 16:30 
+Course duration approximately: 9:00 - 16:30 
 
 time | content
 --- | ---
-8:30 - 9:00   |   Course presentation -  Coffee
-9:00 - 10:30  |   Metagenomics Introduction (theoretical part)
+9:00 - 9:10   |   Course presentation -  Coffee
+9:10 - 10:30  |   Metagenomics Introduction (theoretical part)
 10:30 - 10:45 |   Coffee break
 10:45 - 12:00 |   Presentation of working dataset - Data processing with [nf-core/taxprofiler](https://nf-co.re/taxprofiler/1.2.3)
 12:00 - 12:45 |   Lunch break

@@ -59,3 +59,17 @@ course_contents/Data_processing
 course_contents/Vuegen_report
 ```
 
+```{toctree}
+:maxdepth: 2
+:hidden:
+:caption: R markdowns
+
+RMarkdowns/Abundance-overview.Rmd
+RMarkdowns/Alpha-diversity.Rmd
+RMarkdowns/Beta-diversity.Rmd
+RMarkdowns/Group-comparison.Rmd
+RMarkdowns/Microb-networks-netcomi.Rmd
+RMarkdowns/Microb-networks.Rmd
+RMarkdowns/WorkHere.Rmd
+```
+

@@ -62,14 +62,13 @@ course_contents/Vuegen_report
 ```{toctree}
 :maxdepth: 2
 :hidden:
-:caption: R markdowns
+:caption: tutorial
 
-RMarkdowns/Abundance-overview.Rmd
-RMarkdowns/Alpha-diversity.Rmd
-RMarkdowns/Beta-diversity.Rmd
-RMarkdowns/Group-comparison.Rmd
-RMarkdowns/Microb-networks-netcomi.Rmd
-RMarkdowns/Microb-networks.Rmd
-RMarkdowns/WorkHere.Rmd
+tutorial/01_Alpha-diversity_tutorial.html
+tutorial/02_Beta-diversity_tutorial.html
+tutorial/03_Abundance-overview_tutorial.html
+tutorial/04_Group-comparison_tutorial.html
+tutorial/05_Microb-networks_tutorial.html
+tutorial/05_Microb-networks-netcomi_tutorial.html
 ```
 

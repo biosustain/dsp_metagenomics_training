@@ -59,16 +59,4 @@ course_contents/Data_processing
 course_contents/Vuegen_report
 ```
 
-```{toctree}
-:maxdepth: 2
-:hidden:
-:caption: tutorial
-
-tutorial/01_Alpha-diversity_tutorial
-tutorial/02_Beta-diversity_tutorial
-tutorial/03_Abundance-overview_tutorial
-tutorial/04_Group-comparison_tutorial
-tutorial/05_Microb-networks_tutorial
-tutorial/05_Microb-networks-netcomi_tutorial
-```
 

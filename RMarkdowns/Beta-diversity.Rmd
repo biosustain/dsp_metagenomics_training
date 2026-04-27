@@ -187,7 +187,7 @@ dispersion_plot_data <- data.frame("distance" = dispersion$distances,
                                    "group" = dispersion$group)
 
 dispersion_box <- ggplot(dispersion_plot_data, aes(x = group, y = distance)) +
-  geom_boxplot(aes(fill = group), outliers = FALSE, alpha = 0.7) +
+  geom_boxplot(aes(fill = group), outlier.shape = NA, alpha = 0.7) +
   geom_point(aes(fill = group), shape = 21,
              position = position_jitter(width = 0.25, height = 0)) +
   theme_bw() +
@@ -226,7 +226,7 @@ dispersion_plot_data <- data.frame("distance" = dispersion$distances,
                                    "group" = dispersion$group)
 
 dispersion_box <- ggplot(dispersion_plot_data, aes(x = group, y = distance)) +
-  geom_boxplot(aes(fill = group), outliers = FALSE, alpha = 0.7) +
+  geom_boxplot(aes(fill = group), outlier.shape = NA, alpha = 0.7) +
   geom_point(aes(fill = group), shape = 21,
              position = position_jitter(width = 0.25, height = 0)) +
   theme_bw() +

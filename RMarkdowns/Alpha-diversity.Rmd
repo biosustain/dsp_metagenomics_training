@@ -98,7 +98,7 @@ colors <- c("1_M2" = "#349F2C", "1_M3" = "#BAE4B3",
 
 richness_boxplot <- ggplot(plot_data, 
                            aes(x = Sampling_Date, y = Richness)) +
-  geom_boxplot(aes(fill = Area_Sampling), outliers = FALSE, alpha = 0.7) +
+  geom_boxplot(aes(fill = Area_Sampling), outlier.shape = NA, alpha = 0.7) +
   geom_point(aes(fill = Area_Sampling), shape = 21,
              position = position_jitter(width = 0.25, height = 0)) +
   theme_bw() +
@@ -119,7 +119,7 @@ richness_boxplot <- ggplot(plot_data,
 ```{r}
 
 shannon_boxplot <- ggplot(plot_data, aes(x = Sampling_Date, y = Shannon)) +
-  geom_boxplot(aes(fill = Area_Sampling), outliers = FALSE, alpha = 0.7) +
+  geom_boxplot(aes(fill = Area_Sampling), outlier.shape = FALSE, alpha = 0.7) +
   geom_point(aes(fill = Area_Sampling), shape = 21,
              position = position_jitter(width = 0.25, height = 0)) +
   theme_bw() +

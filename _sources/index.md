@@ -65,5 +65,6 @@ course_contents/Vuegen_report
 :caption: Tutorials
 
 tutorial/01_Alpha-diversity_tutorial
+tutorial/02_Beta-diversity_tutorial
 ```
 

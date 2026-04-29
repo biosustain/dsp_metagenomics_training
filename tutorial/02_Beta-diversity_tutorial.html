@@ -1,0 +1,1075 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Beta diversity tutorial &#8212; Metagenomics course, Data Science Platform (DSP)  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial/02_Beta-diversity_tutorial';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Alpha Diversity Tutorial" href="01_Alpha-diversity_tutorial.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Metagenomics course, Data Science Platform (DSP)  documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/biosustain/dsp_metagenomics_training" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Course information</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../course_information/Instructions.html">Instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_information/Location.html">Location</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_information/Timing.html">Timing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Course contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../course_contents/Contents.html">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_contents/Data_processing.html">Metagenomics data processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_contents/Vuegen_report.html">Reporting with VueGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_Alpha-diversity_tutorial.html">Alpha Diversity Tutorial</a></li>
+
+
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Beta diversity tutorial</a></li>
+
+
+
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/biosustain/dsp_metagenomics_training" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/biosustain/dsp_metagenomics_training/edit/main/tutorial/02_Beta-diversity_tutorial.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorial/02_Beta-diversity_tutorial.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Beta diversity tutorial</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Beta diversity tutorial</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#r-packages-that-need-to-be-installed">R Packages that need to be installed</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data-objects">Load data objects</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-directory-for-the-pcoa-related-results">Creating a directory for the PCoA related results</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-a-principal-coordinates-analysis-pcoa">Plotting a Principal coordinates analysis (PCoA)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-pcoa">Perform PCoA</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extract-eigenvalues-and-points">Extract eigenvalues and points</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extract-loading-data">Extract loading data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-plot-pcoa-results">Step 4: Plot PCoA results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-plot-the-pcoa-with-loadings-optional">Step 5: Plot the PCoA with Loadings (optional)</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#permutational-multivariate-analysis-of-variance-permanova">Permutational multivariate analysis of variance (PERMANOVA)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distance-to-centroid-dispersion">Distance to centroid (dispersion)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dispersion-boxplots">Dispersion boxplots</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dispersion-for-sampling">Dispersion for Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Dispersion boxplots</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#permanova-test">PERMANOVA test</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility">Printing all package versions (good practice to ensure reproducibility)</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <br>
+<p><strong>Organisation:</strong> Data Science Platform<br />
+<strong>Responsibles:</strong> Albert Pallejà Caro (<a class="reference external" href="mailto:apca&#37;&#52;&#48;dtu&#46;dk" rel="noreferrer" target="_blank">apca<span>&#64;</span>dtu<span>&#46;</span>dk</a>)<br>Alexander Zubov
+(<a class="reference external" href="mailto:alzub&#37;&#52;&#48;dtu&#46;dk" rel="noreferrer" target="_blank">alzub<span>&#64;</span>dtu<span>&#46;</span>dk</a>)<br>Edir Sebastian Vidal Casto
+(<a class="reference external" href="mailto:s243564&#37;&#52;&#48;student&#46;dtu&#46;dk" rel="noreferrer" target="_blank">s243564<span>&#64;</span>student<span>&#46;</span>dtu<span>&#46;</span>dk</a>)<br>Juliana Assis (<a class="reference external" href="mailto:jasge&#37;&#52;&#48;dtu&#46;dk" rel="noreferrer" target="_blank">jasge<span>&#64;</span>dtu<span>&#46;</span>dk</a>)</p>
+<br>
+<!-- ----------------------- Do not edit above this ----------------------- -->
+<p>This markdown is to calculate Bray-Curtis dissimilarities between
+samples based on species abundance and to plot these ones on the two
+first axis of a principal coordinate analysis (PCoA).</p>
+<p>🔄 Beta Diversity: Bray-Curtis Dissimilarity &amp; PCoA</p>
+<p><strong>Beta diversity</strong> measures <strong>differences in community composition
+between samples</strong>. It captures how similar or dissimilar samples are in
+terms of their species or taxa abundance.</p>
+<hr class="docutils" />
+<p><strong>📏 Bray-Curtis Dissimilarity</strong></p>
+<p>The <strong>Bray-Curtis dissimilarity</strong> is a widely used metric in ecology and
+microbiome analysis. It compares species abundances between two samples
+and ranges from <strong>0</strong> (identical composition) to <strong>1</strong> (completely
+different).</p>
+<div class="math notranslate nohighlight">
+\[
+BC\_{ij} = \frac{\sum |x\_{ik} - x\_{jk}|}{\sum (x\_{ik} + x\_{jk})}
+\]</div>
+<p>Where: - <em>x</em><sub><em>i**k</em></sub> is the abundance of species <em>k</em> in sample
+<em>i</em>, - <em>x</em><sub><em>j**k</em></sub> is the abundance of species <em>k</em> in sample
+<em>j</em>.</p>
+<hr class="docutils" />
+<p><strong>🧭 Principal Coordinates Analysis (PCoA)</strong></p>
+<p>To <strong>visualize</strong> the dissimilarity between samples, we use <strong>Principal
+Coordinates Analysis (PCoA)</strong>. This method projects the dissimilarity
+matrix into a lower-dimensional space (typically 2D), allowing us to:</p>
+<ul class="simple">
+<li><p>Explore <strong>patterns</strong> in microbial communities.</p></li>
+<li><p>Identify <strong>clustering</strong> by experimental groups (e.g., treatment,
+timepoint).</p></li>
+<li><p>Detect <strong>outliers</strong> in community composition.</p></li>
+</ul>
+<hr class="docutils" />
+<p><strong>🎯 Goal</strong></p>
+<ul class="simple">
+<li><p><strong>Input</strong>: A table of species abundances per sample.</p></li>
+<li><p><strong>Step 1</strong>: Compute <strong>Bray-Curtis dissimilarity</strong> between all sample
+pairs.</p></li>
+<li><p><strong>Step 2</strong>: Perform <strong>PCoA</strong> on the distance matrix.</p></li>
+<li><p><strong>Output</strong>: A 2D scatter plot where:</p>
+<ul>
+<li><p>Each symbol = a sample.</p></li>
+<li><p>Distance between symbols = ecological dissimilarity.</p></li>
+</ul>
+</li>
+</ul>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="beta-diversity-tutorial">
+<h1>Beta diversity tutorial<a class="headerlink" href="#beta-diversity-tutorial" title="Link to this heading">#</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="r-packages-that-need-to-be-installed">
+<h1>R Packages that need to be installed<a class="headerlink" href="#r-packages-that-need-to-be-installed" title="Link to this heading">#</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>library(dplyr)
+library(ggplot2)
+library(vegan)
+</pre></div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="load-data-objects">
+<h1>Load data objects<a class="headerlink" href="#load-data-objects" title="Link to this heading">#</a></h1>
+<p><strong>Load species abundance, taxonomical annotation and metadata file</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Abundance table
+abundance &lt;- readRDS(file = &quot;../data/MetaphlanAbundance_Species.rds&quot;)
+rownames(abundance) &lt;- gsub(&quot;_SRR_db1.metaphlan&quot;, &quot;&quot;, rownames(abundance))
+
+# Taxonomical annotation
+annotation &lt;- readRDS(file = &quot;../data/MetaphlanAnnotations_Species.rds&quot;)
+
+# Metadata
+metadata &lt;- read.table(file = &quot;../data/metadata.tsv&quot;,
+                       header = TRUE, sep = &quot;\t&quot;,
+                       quote = &quot;&quot;,
+                       row.names = NULL)
+rownames(metadata) &lt;- metadata$Sample
+
+# Take only samples with sequencing and metadata information
+abundance &lt;- abundance[rownames(metadata), ]
+</pre></div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="creating-a-directory-for-the-pcoa-related-results">
+<h1>Creating a directory for the PCoA related results<a class="headerlink" href="#creating-a-directory-for-the-pcoa-related-results" title="Link to this heading">#</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>results_dir &lt;- &quot;../results/report/02_Beta-diversity&quot;
+
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+</pre></div>
+</div>
+<section id="plotting-a-principal-coordinates-analysis-pcoa">
+<h2>Plotting a Principal coordinates analysis (PCoA)<a class="headerlink" href="#plotting-a-principal-coordinates-analysis-pcoa" title="Link to this heading">#</a></h2>
+<p><strong>Calculate Bray-Curtis Dissimilarity Matrix</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>bray_curtis &lt;- vegdist(abundance, 
+                       method = &quot;bray&quot;)
+</pre></div>
+</div>
+<section id="perform-pcoa">
+<h3>Perform PCoA<a class="headerlink" href="#perform-pcoa" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>cmdscale()</strong> performs classical multidimensional scaling (also
+called PCoA) on a distance matrix.</p></li>
+<li><p><strong>bray_curtis:</strong> a dissimilarity matrix (often from vegdist() in
+vegan).</p></li>
+<li><p><strong>eig</strong> = TRUE: store eigenvalues, which indicate how much variation
+is explained by each axis.</p></li>
+<li><p><strong>k = 2:</strong> return 2 dimensions, typically the top 2 axis</p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pcoa_result &lt;- cmdscale(bray_curtis, 
+                        eig = TRUE, 
+                        k = 2)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="extract-eigenvalues-and-points">
+<h2>Extract eigenvalues and points<a class="headerlink" href="#extract-eigenvalues-and-points" title="Link to this heading">#</a></h2>
+<p><strong>Only positive eigenvalues contribute to variance explained</strong></p>
+<ul class="simple">
+<li><p>Calculates proportion of variance each axis explains.</p></li>
+<li><p>Multiplies first two axes by 100 and rounds: this is used for axis
+labels later</p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>eig_vals &lt;- pcoa_result$eig
+eig_vals &lt;- eig_vals[eig_vals &gt; 0]
+var_explained &lt;- eig_vals / sum(eig_vals)
+axis_variance &lt;- round(var_explained[1:2] * 100)
+
+scores &lt;- as.data.frame(pcoa_result$points)
+scores$Area &lt;- metadata$Area
+scores$Sampling &lt;- metadata$Sampling
+colnames(scores) &lt;- c(&quot;Axis1&quot;, &quot;Axis2&quot;, &quot;Area&quot;, &quot;Sampling&quot;)
+</pre></div>
+</div>
+<section id="extract-loading-data">
+<h3>Extract loading data<a class="headerlink" href="#extract-loading-data" title="Link to this heading">#</a></h3>
+<p>To calculate variable loadings (contributions of the original variables
+to the PCoA axis), you can use the envfit() function in the vegan
+package. Fit environmental vectors to the ordination</p>
+<ul class="simple">
+<li><p><strong>envfit()</strong> fits abundance data (e.g., species) onto the
+ordination.</p></li>
+<li><p><strong>perm = 999:</strong> permutation test to assess significance of variable
+vectors.</p></li>
+<li><p>Randomly shuffles the group labels (e.g., Area) many times (in this
+case, 999 times).</p></li>
+<li><p>Recalculates the test statistic (e.g., pseudo-F) for each
+permutation.</p></li>
+<li><p>Compares the observed statistic to this distribution to compute a
+<strong>p-value</strong>.</p></li>
+</ul>
+<p>This p-value tells you <strong>how likely it is</strong> to observe such a strong
+group difference <strong>just by chance</strong>.</p>
+<p><strong>Why 999?</strong></p>
+<p>Using 999 permutations gives you a reasonably accurate estimate of the
+null distribution. The smallest possible p-value (assuming none of the
+permutations gives a stronger effect than the observed one) is:</p>
+<ul class="simple">
+<li><p>Returns vectors that show how taxa relate to ordination axes.</p></li>
+<li><p>Filters arrows for strong correlations <strong>(r ≥ 0.75)</strong> and
+significance <strong>(p ≤ 0.05)</strong></p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>loadings &lt;- envfit(pcoa_result, 
+                   abundance, 
+                   perm = 999)
+
+loadings_df &lt;- as.data.frame(loadings$vectors$arrows[loadings$vectors$r &gt;= 0.75 &amp; 
+            loadings$vectors$pvals &lt;= 0.05,])
+colnames(loadings_df) &lt;- c(&quot;Axis1&quot;, &quot;Axis2&quot;)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="step-4-plot-pcoa-results">
+<h2>Step 4: Plot PCoA results<a class="headerlink" href="#step-4-plot-pcoa-results" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>colors &lt;- c(&quot;1&quot; = &quot;#349F2C&quot;,
+            &quot;2&quot; = &quot;#0F5096&quot;,
+            &quot;3&quot; = &quot;#CA0020&quot;)
+
+scores$Area &lt;- as.factor(scores$Area) # as a factor
+
+shapes &lt;- c(&quot;M2&quot; = 21,
+            &quot;M3&quot; = 17)
+
+scores$Sampling &lt;- as.factor(scores$Sampling) # as a factor
+
+p &lt;- ggplot(scores, 
+            aes(x = Axis1, y = Axis2)) +
+  
+  geom_point(aes(color = Area, 
+                 fill = Area, 
+                 shape = Sampling), 
+             size = 3) +
+  
+  scale_color_manual(values = colors) +
+  
+  scale_fill_manual(values = colors) +
+  
+  scale_shape_manual(values = shapes) +
+  
+  theme_bw() +
+  
+  theme(aspect.ratio = 1) +
+  
+  labs(x = paste0(&quot;Axis1 &quot;, 
+                  axis_variance[1], &quot;%&quot;),
+       y = paste0(&quot;Axis2 &quot;, axis_variance[2], &quot;%&quot;),
+       title = &quot;PCoA plot&quot;)
+p
+</pre></div>
+</div>
+<p><img alt="" src="../_images/unnamed-chunk-8-1.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Save it as a png
+ggsave(&quot;../results/report/02_Beta-diversity/01_PCoA_plot.png&quot;,
+       width = 8, height = 6, dpi = 300)
+</pre></div>
+</div>
+</section>
+<section id="step-5-plot-the-pcoa-with-loadings-optional">
+<h2>Step 5: Plot the PCoA with Loadings (optional)<a class="headerlink" href="#step-5-plot-the-pcoa-with-loadings-optional" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>p &lt;- ggplot(scores, 
+            aes(x = Axis1, 
+                y = Axis2)) +
+  
+  geom_point(aes(color = Area, 
+                 fill = Area, 
+                 shape = Sampling), 
+             size = 2) +
+  
+  geom_segment(data = loadings_df,
+               aes(x = 0, 
+                   y = 0, 
+                   xend = Axis1, 
+                   yend = Axis2),
+               arrow = arrow(length = unit(0.1, &quot;cm&quot;)), 
+               color = &quot;grey&quot;,
+               linewidth = 0.5) +
+  
+  geom_text(data = loadings_df, 
+            aes(x = Axis1, 
+                y = Axis2,
+            label = annotation$species[match(rownames(loadings_df),
+            rownames(annotation))]),
+            vjust = -0.5,
+            hjust = 0.5,
+            color = &quot;red&quot;,
+            position = &quot;jitter&quot;,
+            size = 3) +
+  
+  scale_color_manual(values = colors) +
+  
+  scale_fill_manual(values = colors) +
+  
+  scale_shape_manual(values = shapes) +
+  
+  theme_bw() +
+  
+  theme(aspect.ratio = 1) +
+  
+  labs(x = paste0(&quot;Axis1 &quot;, 
+                  axis_variance[1], &quot;%&quot;),
+       y = paste0(&quot;Axis2 &quot;, 
+                  axis_variance[2], &quot;%&quot;),
+       title = &quot;PCoA with variable loadings&quot;,
+       subtitle = &quot;r &gt;= 0.75, P &lt;= 0.05&quot;)
+p
+</pre></div>
+</div>
+<p><img alt="" src="../_images/unnamed-chunk-9-11.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Save it as a png
+ggsave(&quot;../results/report/02_Beta-diversity/02_PCoA_with_loadings.png&quot;,
+       width = 8, height = 6, dpi = 300)
+</pre></div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="permutational-multivariate-analysis-of-variance-permanova">
+<h1>Permutational multivariate analysis of variance (PERMANOVA)<a class="headerlink" href="#permutational-multivariate-analysis-of-variance-permanova" title="Link to this heading">#</a></h1>
+<p><strong>PERMANOVA</strong> is a non-parametric method used to test whether the
+centroids of multivariate sample groups are significantly different
+based on a distance matrix. It is commonly applied in microbial
+community studies using Bray–Curtis or UniFrac distances.</p>
+<p>This method is available via the <code class="docutils literal notranslate"><span class="pre">adonis()</span></code> function from the <code class="docutils literal notranslate"><span class="pre">vegan</span></code>
+package.</p>
+<p><strong>When to use PERMANOVA?</strong></p>
+<p>PERMANOVA is useful for testing hypotheses like:</p>
+<ul class="simple">
+<li><p>Do microbial communities differ significantly between sampling
+sites?</p></li>
+<li><p>Is there a significant effect of treatment or time on overall
+community composition?</p></li>
+</ul>
+<p>Unlike ANOVA, PERMANOVA does not require normality and can be applied
+directly to distance matrices derived from community data.</p>
+<p>Before running a PERMANOVA test let’s assess the data dispersion within
+the areas and within sampling dates. High dispersion of data within the
+groups could affect the analysis of variance test as this test assumes
+homogeneity of variance</p>
+<p><strong>Dispersion for Area</strong></p>
+<section id="distance-to-centroid-dispersion">
+<h2>Distance to centroid (dispersion)<a class="headerlink" href="#distance-to-centroid-dispersion" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dispersion &lt;- betadisper(d = bray_curtis,
+                         group = metadata$Area,
+                         type = &quot;centroid&quot;,
+                         bias.adjust = FALSE)
+
+dispersion_table &lt;- permutest(dispersion,
+                              permutations = how(nperm = 1000),
+                              by = &quot;margin&quot;)
+
+dispersion_table
+
+## 
+## Permutation test for homogeneity of multivariate dispersions
+## Permutation: free
+## Number of permutations: 1000
+## 
+## Response: Distances
+##           Df   Sum Sq  Mean Sq      F N.Perm   Pr(&gt;F)    
+## Groups     2 0.110772 0.055386 18.988   1000 0.000999 ***
+## Residuals 15 0.043753 0.002917                           
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</pre></div>
+</div>
+<p><strong>There is a significant dispersion of the data points among the areas</strong></p>
+<section id="dispersion-boxplots">
+<h3>Dispersion boxplots<a class="headerlink" href="#dispersion-boxplots" title="Link to this heading">#</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dispersion_plot_data &lt;- data.frame(&quot;distance&quot; = dispersion$distances,
+                                   &quot;group&quot; = dispersion$group)
+
+dispersion_box &lt;- ggplot(dispersion_plot_data, aes(x = group, 
+                                                   y = distance)) +
+  
+  geom_boxplot(aes(fill = group), 
+               outliers = FALSE, 
+               alpha = 0.7) +
+  
+  geom_point(aes(fill = group), 
+             shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  
+  theme_bw() +
+  
+  scale_fill_manual(values = colors) +
+  
+  labs(title = &quot;Dispersion (Area variability)&quot;,
+       x = &quot;Area&quot;,
+       y = &quot;Distance to centroid&quot;)
+
+dispersion_box
+</pre></div>
+</div>
+<p><img alt="" src="../_images/unnamed-chunk-11-1.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Save it as a png
+ggsave(&quot;../results/report/02_Beta-diversity/03_dispersion_plot.png&quot;,
+       width = 6, height = 4, dpi = 300)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="dispersion-for-sampling">
+<h2>Dispersion for Sampling<a class="headerlink" href="#dispersion-for-sampling" title="Link to this heading">#</a></h2>
+<p><strong>Distance to centroid (dispersion)</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dispersion &lt;- betadisper(d = bray_curtis,
+                         group = metadata$Sampling,
+                         type = &quot;centroid&quot;,
+                         bias.adjust = FALSE)
+
+dispersion_table &lt;- permutest(dispersion,
+                              permutations = how(nperm = 1000),
+                              by = &quot;margin&quot;)
+
+dispersion_table
+
+## 
+## Permutation test for homogeneity of multivariate dispersions
+## Permutation: free
+## Number of permutations: 1000
+## 
+## Response: Distances
+##           Df   Sum Sq   Mean Sq      F N.Perm  Pr(&gt;F)  
+## Groups     1 0.016488 0.0164884 7.6488   1000 0.01399 *
+## Residuals 16 0.034491 0.0021557                        
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</pre></div>
+</div>
+<p><strong>There is a significant dispersion of the data points between the
+sampling dates</strong></p>
+<section id="id1">
+<h3>Dispersion boxplots<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dispersion_plot_data &lt;- data.frame(&quot;distance&quot; = dispersion$distances,
+                                   &quot;group&quot; = dispersion$group)
+
+dispersion_box &lt;- ggplot(dispersion_plot_data, 
+                         aes(x = group, 
+                             y = distance)) +
+  
+  geom_boxplot(aes(fill = group),
+               outliers = FALSE, 
+               alpha = 0.7) +
+  
+  geom_point(aes(fill = group), 
+             shape = 21,
+             position = position_jitter(width = 0.25, height = 0)) +
+  
+  theme_bw() +
+  
+  scale_fill_manual(values = c(&quot;red&quot;, &quot;blue&quot;)) +
+  
+  labs(title = &quot;Dispersion (Sampling variability)&quot;,
+       x = &quot;Sampling&quot;,
+       y = &quot;Distance to centroid&quot;)
+
+dispersion_box
+</pre></div>
+</div>
+<p><img alt="" src="../_images/unnamed-chunk-13-1.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Save it as a png
+ggsave(&quot;../results/report/02_Beta-diversity/04_dispersion_plot_sampling.png&quot;,
+       width = 5, height = 4, dpi = 300)
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="permanova-test">
+<h1>PERMANOVA test<a class="headerlink" href="#permanova-test" title="Link to this heading">#</a></h1>
+<p>A significant permutest from a betadisper object indicates that there
+are significant differences in dispersion among groups, which violates
+the assumption of homogeneity of variances required for PERMANOVA. You
+can still perform a PERMANOVA, but the results should be interpreted
+with caution, and you should consider additional analyses.</p>
+<p><strong>Differences among treatment groups</strong> - Can compositional differences
+among groups be explained by the area and sampling date?</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>set.seed(12)
+
+independent_variables &lt;- paste(&quot;Area&quot;, 
+                               &quot;Sampling&quot;, 
+                               sep = &quot;+&quot;)
+
+form &lt;- paste0(&quot;bray_curtis ~&quot;, 
+               independent_variables) %&gt;% 
+  as.formula
+
+adonis_table &lt;- adonis2(form,
+                        data = metadata,
+                        permutations = 1000,
+                        by = &quot;margin&quot;)
+
+write.csv(adonis_table,
+          file = &quot;../results/report/02_Beta-diversity/05_Adonis_table.csv&quot;,
+          row.names = TRUE, quote = FALSE)
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Both factors: area and sampling data significantly explain the
+compositional</p></li>
+<li><p>variance among the samples. These results should be interpreted with
+caution</p></li>
+<li><p>as there is significant differences in dispersion among the groups.</p></li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="printing-all-package-versions-good-practice-to-ensure-reproducibility">
+<h1>Printing all package versions (good practice to ensure reproducibility)<a class="headerlink" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility" title="Link to this heading">#</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>## R version 4.3.1 (2023-06-16)
+## Platform: aarch64-apple-darwin20 (64-bit)
+## Running under: macOS 26.3.1
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+## 
+## locale:
+## [1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+## 
+## time zone: Europe/Copenhagen
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] vegan_2.6-8    lattice_0.22-6 permute_0.9-7  ggplot2_3.5.1  dplyr_1.1.4   
+## 
+## loaded via a namespace (and not attached):
+##  [1] Matrix_1.6-1.1    gtable_0.3.6      compiler_4.3.1    tidyselect_1.2.1 
+##  [5] parallel_4.3.1    cluster_2.1.6     textshaping_0.4.0 systemfonts_1.1.0
+##  [9] splines_4.3.1     scales_1.3.0      yaml_2.3.10       fastmap_1.2.0    
+## [13] R6_2.5.1          labeling_0.4.3    generics_0.1.3    knitr_1.49       
+## [17] MASS_7.3-60       tibble_3.2.1      munsell_0.5.1     pillar_1.9.0     
+## [21] rlang_1.1.4       utf8_1.2.4        xfun_0.49         cli_3.6.3        
+## [25] withr_3.0.2       magrittr_2.0.3    mgcv_1.9-1        digest_0.6.37    
+## [29] grid_4.3.1        lifecycle_1.0.4   nlme_3.1-166      vctrs_0.6.5      
+## [33] evaluate_1.0.1    glue_1.8.0        farver_2.1.2      ragg_1.3.3       
+## [37] fansi_1.0.6       colorspace_2.1-1  rmarkdown_2.29    tools_4.3.1      
+## [41] pkgconfig_2.0.3   htmltools_0.5.8.1
+</pre></div>
+</div>
+<!-- --------------------- Do not edit this and below ---------------------- -->
+</br>
+<footer class="footer">
+<div class="footer-container">
+<div class="row">
+<hr>
+<p class="small" style="color:#bdbdbd;">
+<b>2026</b> • [Data Science
+Platform](https://bright.dtu.dk/technologies/biofoundry/informatics) •
+[BRIGHT](https://bright.dtu.dk/)
+</p>
+<p style="color:#bdbdbd;">
+<span class="footericon" style="padding-right:4px; padding-left:4px">
+<a href="https://www.biosustain.dtu.dk/technologies/biofoundry/informatics"></a>
+</span> <span class="footericon"
+style="padding-right:4px; padding-left:4px">
+<a href="https://x.com/dtubiosustain"></a> </span>
+<span class="footericon" style="padding-left:4px">
+<a href="https://www.linkedin.com/company/brightdtu/"></a> </span>
+</p>
+</div>
+</div>
+</footer>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="01_Alpha-diversity_tutorial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Alpha Diversity Tutorial</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Beta diversity tutorial</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#r-packages-that-need-to-be-installed">R Packages that need to be installed</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data-objects">Load data objects</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-directory-for-the-pcoa-related-results">Creating a directory for the PCoA related results</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-a-principal-coordinates-analysis-pcoa">Plotting a Principal coordinates analysis (PCoA)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-pcoa">Perform PCoA</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extract-eigenvalues-and-points">Extract eigenvalues and points</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extract-loading-data">Extract loading data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-plot-pcoa-results">Step 4: Plot PCoA results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-plot-the-pcoa-with-loadings-optional">Step 5: Plot the PCoA with Loadings (optional)</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#permutational-multivariate-analysis-of-variance-permanova">Permutational multivariate analysis of variance (PERMANOVA)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distance-to-centroid-dispersion">Distance to centroid (dispersion)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dispersion-boxplots">Dispersion boxplots</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dispersion-for-sampling">Dispersion for Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Dispersion boxplots</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#permanova-test">PERMANOVA test</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility">Printing all package versions (good practice to ensure reproducibility)</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Albert Palleja
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, DTU Biosustain, Informatics Platform, DSP.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

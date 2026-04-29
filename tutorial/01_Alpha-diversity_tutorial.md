@@ -399,9 +399,9 @@ Here’s why this happens:
 <hr>
 
 <p class="small" style="color:#bdbdbd;">
-<b>2025</b> • [Data Science
-Platform](https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform)
-• [CFB](https://www.biosustain.dtu.dk/)
+<b>2026</b> • [Data Science
+Platform](https://bright.dtu.dk/technologies/biofoundry/informatics) •
+[BRIGHT](https://bright.dtu.dk/)
 </p>
 
 <p style="color:#bdbdbd;">
@@ -411,7 +411,7 @@ Platform](https://www.biosustain.dtu.dk/technologies/informatics/data-science-pl
 style="padding-right:4px; padding-left:4px">
 <a href="https://x.com/dtubiosustain"></a> </span>
 <span class="footericon" style="padding-left:4px">
-<a href="https://www.linkedin.com/company/dtu-biosustain/"></a> </span>
+<a href="https://www.linkedin.com/company/brightdtu/"></a> </span>
 </p>
 
 </div>

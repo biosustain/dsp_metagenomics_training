@@ -79,6 +79,8 @@ value** indicates **less diversity**
 </tbody>
 </table>
 
+# Alpha Diversity Tutorial
+
 # Packages
 
 Loading libraries needed. They were installed in the codespace when

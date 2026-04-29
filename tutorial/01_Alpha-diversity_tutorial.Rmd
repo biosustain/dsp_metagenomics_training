@@ -95,6 +95,8 @@ and we will compare these diversity metrics between the study groups.
 | Shannon    | Richness + Evenness     | Common + rare species  | ≥0 (higher = more diverse) |
 :::
 
+# Alpha Diversity Tutorial
+
 # Packages
 Loading libraries needed. They were installed in the codespace when developed.
 

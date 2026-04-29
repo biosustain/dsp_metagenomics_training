@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Alpha Diversity Tutorial &#8212; Metagenomics course, Data Science Platform (DSP)  documentation</title>
+    <title>Abundace overview tutorial &#8212; Metagenomics course, Data Science Platform (DSP)  documentation</title>
   
   
   
@@ -44,13 +44,12 @@
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial/01_Alpha-diversity_tutorial';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial/03_Abundance-overview_tutorial';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Beta diversity tutorial" href="02_Beta-diversity_tutorial.html" />
-    <link rel="prev" title="Reporting with VueGen" href="../course_contents/Vuegen_report.html" />
+    <link rel="prev" title="Beta diversity tutorial" href="02_Beta-diversity_tutorial.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -172,7 +171,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Alpha Diversity Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_Alpha-diversity_tutorial.html">Alpha Diversity Tutorial</a></li>
 
 
 
@@ -185,7 +184,7 @@
 
 
 
-<li class="toctree-l1"><a class="reference internal" href="03_Abundance-overview_tutorial.html">Abundace overview tutorial</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Abundace overview tutorial</a></li>
 
 
 
@@ -265,7 +264,7 @@
       
       
       
-      <li><a href="https://github.com/biosustain/dsp_metagenomics_training/edit/main/tutorial/01_Alpha-diversity_tutorial.md" target="_blank"
+      <li><a href="https://github.com/biosustain/dsp_metagenomics_training/edit/main/tutorial/03_Abundance-overview_tutorial.md" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -295,7 +294,7 @@
       
       
       
-      <li><a href="../_sources/tutorial/01_Alpha-diversity_tutorial.md" target="_blank"
+      <li><a href="../_sources/tutorial/03_Abundance-overview_tutorial.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -371,7 +370,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Alpha Diversity Tutorial</h1>
+    <h1>Abundace overview tutorial</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -381,24 +380,16 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Alpha Diversity Tutorial</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#packages">Packages</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Abundace overview tutorial</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#r-packages-that-need-to-be-installed">R Packages that need to be installed</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data-objects">Load data objects</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#take-only-samples-with-sequencing-and-metadata-information">Take only samples with sequencing and metadata information</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-directory-for-the-related-results">Creating a directory for the related results</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-alpha-diversity">Calculate Alpha Diversity</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-alpha-diversity-measurements">Plot alpha diversity measurements</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-boxplots">Create boxplots</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shannon">Shannon</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#save">Save</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#statistical-comparison">Statistical comparison</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-post-hoc-dunns-test">Perform post-hoc Dunn’s test</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-total-abundances-per-species">Calculate total abundances per species</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-to-top-10-taxa">Filter to top 10 taxa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convert-to-long-format-for-ggplot">Convert to long format for ggplot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stack-bar-plot-of-the-top-10-most-dominant-species">Stack bar plot of the top-10 most dominant species</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-summarize-the-same-plot-per-area-and-sampling">Let’s summarize the same plot per Area and Sampling</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility">Printing all package versions (good practice to ensure reproducibility)</a></li>
@@ -421,115 +412,48 @@
 (<a class="reference external" href="mailto:s243564&#37;&#52;&#48;student&#46;dtu&#46;dk" rel="noreferrer" target="_blank">s243564<span>&#64;</span>student<span>&#46;</span>dtu<span>&#46;</span>dk</a>)<br>Juliana Assis (<a class="reference external" href="mailto:jasge&#37;&#52;&#48;dtu&#46;dk" rel="noreferrer" target="_blank">jasge<span>&#64;</span>dtu<span>&#46;</span>dk</a>)</p>
 <br>
 <!-- ----------------------- Do not edit above this ----------------------- -->
-<p>This markdown is to calculate the <strong>alpha diversity</strong> of the <strong>samples</strong>
-as <strong>Richness</strong> (number of species detected per sample) and as <strong>Shannon
-diversity index</strong> (accounts for number of species detected and abundance
-distribution). These calculations are based on the species abundance
-table. Here we will plot Richness and Shannon index, and we will compare
-these diversity metrics between the study groups.</p>
-<p><strong>🧬 Alpha Diversity: Richness vs. Shannon Index</strong></p>
-<p><strong>Alpha diversity</strong> refers to the diversity <strong>within a single sample or
-environment</strong>. It captures two main aspects:</p>
-<ul>
-<li><p><strong>Richness</strong>:<br />
-The <strong>number of different species</strong> (or operational taxonomic units,
-OTUs) present in a sample.<br />
-👉 It tells you <em>how many</em> types of organisms there are, but not how
-evenly they are distributed.</p></li>
-<li><p><strong>Shannon Diversity Index</strong>:<br />
-A metric that combines <strong>richness</strong> and <strong>evenness</strong> (the relative
-abundance of species).<br />
-👉 It increases when both the number of species and the balance
-between their abundances increase.<br />
-Mathematically, it is calculated as:</p>
-<p><em>H</em>′ =  − ∑(<em>p</em><sub><em>i</em></sub>×log(<em>p</em><sub><em>i</em></sub>))</p>
-<p>Where: <em>H</em>′ is the Shannon Diversity Index. <em>p**i</em> is the proportion
-of individuals belonging to species i. <em>l**n</em> is the natural
-logarithm.</p>
-</li>
-</ul>
-<p><strong>Interpretation</strong>: The value of H’ typically ranges from 0 to a maximum
-value (which depends on the number of species and their abundance). A
-<strong>higher value</strong> indicates <strong>greater diversity</strong>, while a <strong>lower
-value</strong> indicates <strong>less diversity</strong></p>
-<hr class="docutils" />
-<p>📝 Summary</p>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 14%" />
-<col style="width: 28%" />
-<col style="width: 28%" />
-<col style="width: 28%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Metric</th>
-<th>What it measures</th>
-<th>Sensitive to</th>
-<th>Value range</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Richness</td>
-<td>Number of species</td>
-<td>Rare species</td>
-<td>1 to <em>N</em> (total taxa)</td>
-</tr>
-<tr class="even">
-<td>Shannon</td>
-<td>Richness + Evenness</td>
-<td>Common + rare species</td>
-<td>≥0 (higher = more diverse)</td>
-</tr>
-</tbody>
-</table>
-<section class="tex2jax_ignore mathjax_ignore" id="alpha-diversity-tutorial">
-<h1>Alpha Diversity Tutorial<a class="headerlink" href="#alpha-diversity-tutorial" title="Link to this heading">#</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="abundace-overview-tutorial">
+<h1>Abundace overview tutorial<a class="headerlink" href="#abundace-overview-tutorial" title="Link to this heading">#</a></h1>
+<p>This markdown is to plot an abundance overview of the top-10 most
+abundant species of the dataset</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="packages">
-<h1>Packages<a class="headerlink" href="#packages" title="Link to this heading">#</a></h1>
-<p>Loading libraries needed. They were installed in the codespace when
-developed.</p>
+<section class="tex2jax_ignore mathjax_ignore" id="r-packages-that-need-to-be-installed">
+<h1>R Packages that need to be installed<a class="headerlink" href="#r-packages-that-need-to-be-installed" title="Link to this heading">#</a></h1>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>library(ggplot2)
-library(patchwork)
-library(vegan)
-library(FSA)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
 </pre></div>
 </div>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="load-data-objects">
 <h1>Load data objects<a class="headerlink" href="#load-data-objects" title="Link to this heading">#</a></h1>
 <p><strong>Load species abundance, taxonomical annotation and metadata file</strong></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance &lt;- readRDS(file = &quot;../data/MetaphlanAbundance_Species.rds&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Abundance table
+abundance &lt;- readRDS(file = &quot;../data/MetaphlanAbundance_Species.rds&quot;)
 rownames(abundance) &lt;- gsub(&quot;_SRR_db1.metaphlan&quot;, &quot;&quot;, rownames(abundance))
 
 # Taxonomical annotation
 annotation &lt;- readRDS(file = &quot;../data/MetaphlanAnnotations_Species.rds&quot;)
 
 # Metadata
-metadata &lt;- read.table(file = &quot;../data/metadata.tsv&quot;, header = TRUE,
-                       sep = &quot;\t&quot;,
+metadata &lt;- read.table(file = &quot;../data/metadata.tsv&quot;,
+                       header = TRUE, sep = &quot;\t&quot;,
                        quote = &quot;&quot;,
                        row.names = NULL)
 rownames(metadata) &lt;- metadata$Sample
 </pre></div>
 </div>
-<p><strong>💡 Tip:</strong> You can use the command <code class="docutils literal notranslate"><span class="pre">dim</span></code> to visualize the
-dimension of the object. Try it yourself.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dim(abundance)
-dim(metadata)
-</pre></div>
-</div>
 <section id="take-only-samples-with-sequencing-and-metadata-information">
 <h2>Take only samples with sequencing and metadata information<a class="headerlink" href="#take-only-samples-with-sequencing-and-metadata-information" title="Link to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance &lt;- abundance[rownames(metadata), ]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance &lt;- abundance[rownames(abundance) %in% 
+                         rownames(metadata),]
 </pre></div>
 </div>
 </section>
 <section id="creating-a-directory-for-the-related-results">
 <h2>Creating a directory for the related results<a class="headerlink" href="#creating-a-directory-for-the-related-results" title="Link to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>results_dir &lt;- &quot;../results/report/01_Alpha-diversity&quot;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>results_dir &lt;- &quot;../results/report/03_Abundance-overview&quot;
 
 dir.create(results_dir, 
            recursive = TRUE, 
@@ -537,229 +461,161 @@ dir.create(results_dir,
 </pre></div>
 </div>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="calculate-alpha-diversity">
-<h1>Calculate Alpha Diversity<a class="headerlink" href="#calculate-alpha-diversity" title="Link to this heading">#</a></h1>
-<p><strong>We calculate Richness and Shannon index using vegan package and added
-both to a dataframe</strong></p>
-<p><strong>📘 Note:</strong> vegan: an R package for community ecologists
-<a class="reference external" href="https://github.com/vegandevs/vegan" rel="noreferrer" target="_blank">Vegan</a>.</p>
-<blockquote>
-<div><p>Ordination methods, diversity analysis and other functions for
-community and vegetation ecologists</p>
-</div></blockquote>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>alpha_div &lt;- data.frame(
-  Richness = rowSums(abundance &gt; 0),
-  Shannon = vegan::diversity(abundance, 
-                             index = &quot;shannon&quot;),
-  row.names = rownames(abundance)
-)
-</pre></div>
-</div>
-<section id="plot-alpha-diversity-measurements">
-<h2>Plot alpha diversity measurements<a class="headerlink" href="#plot-alpha-diversity-measurements" title="Link to this heading">#</a></h2>
-<p><strong>Prepare plot dataframe</strong></p>
-<p>We join the alpha diversity data with the grouping file (often called
-metadata)</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>plot_data &lt;- cbind(alpha_div, 
-                   metadata$Area, 
-                   metadata$Sampling,
-  paste(metadata$Area, metadata$Sampling, 
-        sep = &quot;_&quot;)
-)
+<section id="calculate-total-abundances-per-species">
+<h2>Calculate total abundances per species<a class="headerlink" href="#calculate-total-abundances-per-species" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>taxa_total &lt;- colSums(abundance)
 
-colnames(plot_data) &lt;-
-  c(&quot;Richness&quot;, &quot;Shannon&quot;, &quot;Area&quot;, &quot;Sampling_Date&quot;, &quot;Area_Sampling&quot;)
-
-write.csv(plot_data, 
-          file = &quot;../results/report/01_Alpha-diversity/01_Alpha_diversity.csv&quot;,
-          row.names = TRUE, 
-          quote = FALSE)
+top_taxa &lt;- names(sort(taxa_total, 
+                       decreasing = TRUE))[1:10]
 </pre></div>
 </div>
 </section>
-<section id="create-boxplots">
-<h2>Create boxplots<a class="headerlink" href="#create-boxplots" title="Link to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>colors &lt;- c(&quot;1_M2&quot; = &quot;#349F2C&quot;, &quot;1_M3&quot; = &quot;#BAE4B3&quot;,
-            &quot;2_M2&quot; = &quot;#0F5096&quot;, &quot;2_M3&quot; = &quot;#1779E3&quot;,
-            &quot;3_M2&quot; = &quot;#CA0020&quot;, &quot;3_M3&quot; = &quot;#FF8784&quot;)
+<section id="filter-to-top-10-taxa">
+<h2>Filter to top 10 taxa<a class="headerlink" href="#filter-to-top-10-taxa" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance_top10 &lt;- as.data.frame(abundance) %&gt;% 
+  select(all_of(top_taxa))
+</pre></div>
+</div>
+</section>
+<section id="convert-to-long-format-for-ggplot">
+<h2>Convert to long format for ggplot<a class="headerlink" href="#convert-to-long-format-for-ggplot" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Move rownames (samples) to a column</p></li>
+<li><p>Adding the species name for the plot</p></li>
+<li><p>Adding the grouping columns: Area and Sampling</p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance_top10$Sample &lt;- rownames(abundance_top10)
 
-richness_boxplot &lt;- ggplot(plot_data, 
-                           aes(x = Sampling_Date, 
-                               y = Richness)) +
+abundance_long &lt;- abundance_top10 %&gt;%
+  pivot_longer(cols = -Sample, 
+               names_to = &quot;Species&quot;,
+               values_to = &quot;Abundance&quot;)
+
+abundance_long$Species_name &lt;- annotation$species[match(abundance_long$Species,
+                                                  rownames(annotation))]
+
+abundance_long$Area &lt;- metadata$Area[match(abundance_long$Sample,
+                                           metadata$Sample)]
+
+abundance_long$Sampling &lt;- metadata$Sampling[match(abundance_long$Sample,
+                                               metadata$Sample)]
+</pre></div>
+</div>
+</section>
+<section id="stack-bar-plot-of-the-top-10-most-dominant-species">
+<h2>Stack bar plot of the top-10 most dominant species<a class="headerlink" href="#stack-bar-plot-of-the-top-10-most-dominant-species" title="Link to this heading">#</a></h2>
+<p><strong>💡 Tip:</strong> Ensure Sample is a factor ordered by Sampling +
+Sample name (for visual grouping).</p>
+<p>🔄 Data Preparation</p>
+<ul class="simple">
+<li><p><strong>arrange(Sampling, Sample):</strong> Sorts the abundance_long data frame
+by the Sampling and Sample columns to ensure consistent order.</p></li>
+<li><p><strong>mutate(Sample = factor(…)):</strong> Converts the Sample column to a
+factor with levels ordered as they appear in the data. This prevents
+ggplot2 from reordering them alphabetically.</p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance_long &lt;- abundance_long %&gt;%
+  arrange(Sampling, Sample) %&gt;%
+  mutate(Sample = factor(Sample, 
+                         levels = unique(Sample)))
+
+pbar &lt;- ggplot(abundance_long, aes(x = Sample, 
+                                   y = Abundance,
+                                   fill = Species_name)) +
   
-  geom_boxplot(aes(fill = Area_Sampling), 
-               outliers = FALSE, 
-               alpha = 0.7) +
+  geom_bar(stat = &quot;identity&quot;, 
+           position = &quot;stack&quot;, 
+           show.legend = TRUE) +
   
-  geom_point(aes(fill = Area_Sampling), 
-             shape = 21,
-             position = position_jitter(width = 0.25, height = 0)) +
+  scale_fill_brewer(palette = &quot;Paired&quot;) +
+  
+  labs(title = &quot;Top-10 Most Abundant Species&quot;,
+       x = &quot;Sample&quot;,
+       y = &quot;Relative Abundance (%)&quot;) +
   
   theme_bw() +
   
-  theme(legend.position = &quot;none&quot;, 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
   
-  scale_fill_manual(values = colors) +
+  scale_y_continuous(expand = c(0, 0)) +
   
-  labs(x = &quot;Sampling&quot;, 
-       y = &quot;Richness (species detected)&quot;) +
-  facet_grid(. ~ Area)
+  scale_x_discrete(expand = c(0, 0)) +
+  
+  facet_wrap(. ~ Area, 
+             scales = &quot;free&quot;)
+
+pbar
+</pre></div>
+</div>
+<p><img alt="" src="../_images/unnamed-chunk-8-11.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Save it as a png
+ggsave(&quot;../results/report/03_Abundance-overview/01_top10_species.png&quot;,
+       width = 8, height = 6, dpi = 300)
 </pre></div>
 </div>
 </section>
-<section id="shannon">
-<h2>Shannon<a class="headerlink" href="#shannon" title="Link to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>shannon_boxplot &lt;- ggplot(plot_data, 
-                          aes(x = Sampling_Date, 
-                              y = Shannon)) +
+<section id="lets-summarize-the-same-plot-per-area-and-sampling">
+<h2>Let’s summarize the same plot per Area and Sampling<a class="headerlink" href="#lets-summarize-the-same-plot-per-area-and-sampling" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Add Sample column and merge with metadata</p></li>
+<li><p>Pivot to long format</p></li>
+<li><p>Summarize abundance by Area + Sampling + Species</p></li>
+<li><p>Adding the species name for the plot</p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance_top10$Area &lt;- metadata$Area
+abundance_top10$Sampling &lt;- metadata$Sampling
+
+abundance_long &lt;- abundance_top10 %&gt;%
+  pivot_longer(cols = all_of(top_taxa),
+               names_to = &quot;Species&quot;,
+               values_to = &quot;Abundance&quot;)
+
+abundance_summary &lt;- abundance_long %&gt;%
+  group_by(Area, Sampling, Species) %&gt;%
+  summarise(MeanAbundance = mean(Abundance), 
+            .groups = &quot;drop&quot;) #ungroup
+
+abundance_summary$Species_name &lt;- 
+  annotation$species[match(abundance_summary$Species,
+                           rownames(annotation))]
+
+pbar_sum &lt;- ggplot(abundance_summary, 
+                   aes(x = interaction(Area, 
+                                       Sampling, 
+                                       sep = &quot; | &quot;),
+                       y = MeanAbundance, 
+                       fill = Species_name)) +
   
-  geom_boxplot(aes(fill = Area_Sampling), 
-               outliers = FALSE, 
-               alpha = 0.7) +
+  geom_bar(stat = &quot;identity&quot;, 
+           position = &quot;stack&quot;, 
+           show.legend = TRUE) +
   
-  geom_point(aes(fill = Area_Sampling), 
-             shape = 21,
-             position = position_jitter(width = 0.25, height = 0)) +
+  scale_fill_brewer(palette = &quot;Paired&quot;) +
   
   theme_bw() +
   
-  theme(legend.position = &quot;none&quot;, 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) +
+  labs(title = &quot;Mean Abundance of Top 10 Taxa by Area and Sampling&quot;,
+       x = &quot;Area | Sampling&quot;,
+       y = &quot;Mean Relative Abundance (%)&quot;) +
   
-  scale_fill_manual(values = colors) +
-  
-  labs(x = &quot;Sampling&quot;, 
-       y = &quot;Shannon index&quot;) +
-  
-  facet_grid(. ~ Area)
+  theme(axis.text.x = element_text(hjust = 0.5),
+        strip.text = element_text(face = &quot;bold&quot;)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_discrete(expand = c(0, 0))
 
-richness_boxplot + 
-  shannon_boxplot
+pbar_sum
 </pre></div>
 </div>
-<p><img alt="" src="../_images/unnamed-chunk-9-1.png" /></p>
-<section id="save">
-<h3>Save<a class="headerlink" href="#save" title="Link to this heading">#</a></h3>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ggsave(filename = &quot;../results/report/01_Alpha-diversity/02_alphadiv_boxplots.png&quot;,
-       width = 8, 
-       height = 4, 
-       dpi = 300)
+<p><img alt="" src="../_images/unnamed-chunk-9-12.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Save it as a png
+ggsave(&quot;../results/report/03_Abundance-overview/02_top10_species_per_area_sampling.png&quot;, 
+        width = 8, height = 6, dpi = 300)
 </pre></div>
 </div>
-</section>
-</section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="statistical-comparison">
-<h1>Statistical comparison<a class="headerlink" href="#statistical-comparison" title="Link to this heading">#</a></h1>
-<p>We have three areas that we want to compare, we will use a
-non-parametric test for more than 2 groups: Kruskal-Wallis. We are
-testing whether there are differences among the three areas</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>kruskal.test(Richness ~ Area, 
-             plot_data)
-
-## 
-##  Kruskal-Wallis rank sum test
-## 
-## data:  Richness by Area
-## Kruskal-Wallis chi-squared = 10.554, df = 2, p-value = 0.005107
-</pre></div>
-</div>
-<p><strong>❓ Question:</strong> Is Richness significantly different among
-the areas?</p>
-<p>When a Kruskal-Wallis test shows that there are significant differences
-between groups, you need a post-hoc test to determine which specific
-groups differ. Since Kruskal-Wallis is non-parametric, the appropriate
-post-hoc test is also a non-parametric - dunnTest. We correct for
-multiple testing using Benjamini-Hochberg (BH) procedure, which is a
-method used to control the False Discovery Rate (FDR) in multiple
-hypothesis testing</p>
-<p>✅ Post-hoc Dunn’s Test — Hypothesis Explanation</p>
-<p>Dunn’s test is a non-parametric post-hoc test used after a
-Kruskal-Wallis test, to determine which specific groups are
-significantly different from each other.</p>
-<p>💡 Why Dunn’s Test?</p>
-<ul class="simple">
-<li><p>Kruskal-Wallis tells you at least one group differs, but not which
-one.</p></li>
-<li><p>Dunn’s test compares all pairwise group combinations.</p></li>
-<li><p>It adjusts p-values for multiple comparisons (e.g., Bonferroni,
-Holm, or FDR).</p></li>
-</ul>
-<section id="perform-post-hoc-dunns-test">
-<h2>Perform post-hoc Dunn’s test<a class="headerlink" href="#perform-post-hoc-dunns-test" title="Link to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dunnTest(Richness ~ Area, 
-         plot_data, 
-         method = &quot;bh&quot;)
-
-## Dunn (1964) Kruskal-Wallis multiple comparison
-
-##   p-values adjusted with the Benjamini-Hochberg method.
-
-##   Comparison          Z     P.unadj       P.adj
-## 1      1 - 2 -0.9758495 0.329139073 0.329139073
-## 2      1 - 3  2.1956613 0.028116197 0.042174296
-## 3      2 - 3  3.1715107 0.001516483 0.004549448
-</pre></div>
-</div>
-<p><strong>Differences occur between 1-3 and 2-3</strong></p>
-<p><strong>❓ Question:</strong> Is it the same for Shannon?</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>kruskal.test(Shannon ~ Area, 
-             plot_data)
-
-## 
-##  Kruskal-Wallis rank sum test
-## 
-## data:  Shannon by Area
-## Kruskal-Wallis chi-squared = 4.8187, df = 2, p-value = 0.08987
-</pre></div>
-</div>
-<p><strong>Almost significant!</strong></p>
-<p>When it is not significant, we don’t needed to test between groups, but
-lets double check:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dunnTest(Shannon ~ Area, 
-         plot_data, 
-         method = &quot;bh&quot;)
-
-## Dunn (1964) Kruskal-Wallis multiple comparison
-
-##   p-values adjusted with the Benjamini-Hochberg method.
-
-##   Comparison          Z    P.unadj      P.adj
-## 1      1 - 2 -2.1629523 0.03054485 0.09163455
-## 2      1 - 3 -0.7570333 0.44902991 0.44902991
-## 3      2 - 3  1.4059190 0.15974818 0.23962228
-</pre></div>
-</div>
-<p><strong>No significant differences, but comparison of 1-3 is almost
-significant.</strong></p>
-<p>🧪 <strong>Why Can Richness Differ Significantly, but Shannon Doesn’t?</strong></p>
-<p>Here’s why this happens:</p>
-<p>✅ 1. Richness varies — but community evenness doesn’t</p>
-<ul class="simple">
-<li><p>If Area A has more species than Area B (higher richness), that’s
-easy to detect statistically.</p></li>
-<li><p>But if both areas still have similar species dominance patterns
-(i.e. same evenness), Shannon may not differ.</p></li>
-</ul>
-<p>✅ 2. Shannon is more “stable” because it includes evenness</p>
-<ul class="simple">
-<li><p>Shannon accounts for how balanced species proportions are.</p></li>
-<li><p>If one area has a few rare taxa (extra richness) but still dominated
-by a few taxa, the Shannon index may not change much.</p></li>
-</ul>
-<p>✅ 3. Richness is more sensitive to sampling depth or rare species</p>
-<ul class="simple">
-<li><p>Richness increases just by detecting one more species.</p></li>
-<li><p>Shannon barely moves unless species abundances change substantially.</p></li>
-</ul>
-<blockquote>
-<div><p>Richness is significantly different between areas, but Shannon is not,
-because the evenness of species abundances is similar across areas.</p>
-</div></blockquote>
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="printing-all-package-versions-good-practice-to-ensure-reproducibility">
@@ -782,21 +638,18 @@ because the evenness of species abundances is similar across areas.</p>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] FSA_0.10.0      vegan_2.6-8     lattice_0.22-6  permute_0.9-7  
-## [5] patchwork_1.3.0 ggplot2_3.5.1  
+## [1] RColorBrewer_1.1-3 tidyr_1.3.1        dplyr_1.1.4        ggplot2_3.5.1     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Matrix_1.6-1.1    gtable_0.3.6      dplyr_1.1.4       compiler_4.3.1   
-##  [5] tidyselect_1.2.1  parallel_4.3.1    cluster_2.1.6     textshaping_0.4.0
-##  [9] systemfonts_1.1.0 splines_4.3.1     scales_1.3.0      yaml_2.3.10      
-## [13] fastmap_1.2.0     R6_2.5.1          labeling_0.4.3    generics_0.1.3   
-## [17] knitr_1.49        MASS_7.3-60       tibble_3.2.1      munsell_0.5.1    
-## [21] pillar_1.9.0      rlang_1.1.4       utf8_1.2.4        xfun_0.49        
-## [25] cli_3.6.3         withr_3.0.2       magrittr_2.0.3    mgcv_1.9-1       
-## [29] digest_0.6.37     grid_4.3.1        nlme_3.1-166      lifecycle_1.0.4  
-## [33] vctrs_0.6.5       evaluate_1.0.1    glue_1.8.0        farver_2.1.2     
-## [37] ragg_1.3.3        dunn.test_1.3.6   fansi_1.0.6       colorspace_2.1-1 
-## [41] rmarkdown_2.29    tools_4.3.1       pkgconfig_2.0.3   htmltools_0.5.8.1
+##  [1] vctrs_0.6.5       cli_3.6.3         knitr_1.49        rlang_1.1.4      
+##  [5] xfun_0.49         purrr_1.0.4       generics_0.1.3    textshaping_0.4.0
+##  [9] labeling_0.4.3    glue_1.8.0        colorspace_2.1-1  htmltools_0.5.8.1
+## [13] ragg_1.3.3        scales_1.3.0      fansi_1.0.6       rmarkdown_2.29   
+## [17] grid_4.3.1        evaluate_1.0.1    munsell_0.5.1     tibble_3.2.1     
+## [21] fastmap_1.2.0     yaml_2.3.10       lifecycle_1.0.4   compiler_4.3.1   
+## [25] pkgconfig_2.0.3   systemfonts_1.1.0 farver_2.1.2      digest_0.6.37    
+## [29] R6_2.5.1          tidyselect_1.2.1  utf8_1.2.4        pillar_1.9.0     
+## [33] magrittr_2.0.3    withr_3.0.2       tools_4.3.1       gtable_0.3.6
 </pre></div>
 </div>
 <!-- --------------------- Do not edit this and below ---------------------- -->
@@ -836,22 +689,13 @@ style="padding-right:4px; padding-left:4px">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../course_contents/Vuegen_report.html"
+       href="02_Beta-diversity_tutorial.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Reporting with VueGen</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="02_Beta-diversity_tutorial.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Beta diversity tutorial</p>
       </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -871,24 +715,16 @@ style="padding-right:4px; padding-left:4px">
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Alpha Diversity Tutorial</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#packages">Packages</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Abundace overview tutorial</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#r-packages-that-need-to-be-installed">R Packages that need to be installed</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data-objects">Load data objects</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#take-only-samples-with-sequencing-and-metadata-information">Take only samples with sequencing and metadata information</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-directory-for-the-related-results">Creating a directory for the related results</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-alpha-diversity">Calculate Alpha Diversity</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-alpha-diversity-measurements">Plot alpha diversity measurements</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-boxplots">Create boxplots</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shannon">Shannon</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#save">Save</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#statistical-comparison">Statistical comparison</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-post-hoc-dunns-test">Perform post-hoc Dunn’s test</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-total-abundances-per-species">Calculate total abundances per species</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-to-top-10-taxa">Filter to top 10 taxa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convert-to-long-format-for-ggplot">Convert to long format for ggplot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stack-bar-plot-of-the-top-10-most-dominant-species">Stack bar plot of the top-10 most dominant species</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-summarize-the-same-plot-per-area-and-sampling">Let’s summarize the same plot per Area and Sampling</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility">Printing all package versions (good practice to ensure reproducibility)</a></li>

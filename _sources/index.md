@@ -59,4 +59,11 @@ course_contents/Data_processing
 course_contents/Vuegen_report
 ```
 
+```{toctree}
+:maxdepth: 2
+:hidden:
+:caption: Tutorials
+
+tutorial/01_Alpha-diversity_tutorial
+```
 

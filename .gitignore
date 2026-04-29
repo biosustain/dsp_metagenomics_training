@@ -12,8 +12,6 @@ RMarkdowns/.Rhistory
 tutorial/assets
 commands_rendering.txt
 
-tutorial/01_Alpha-diversity_tutorial_files/figure-markdown_strict/unnamed-chunk-9-1.png 
-
 # Ignore nextflow files
 .nextflow*
 work/

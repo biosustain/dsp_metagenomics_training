@@ -19,21 +19,24 @@ output:
     css: "assets/report.css"
     includes:
       in_header: "assets/copy-button.html"
-    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
+    staff_web: "https://bright.dtu.dk/technologies/biofoundry/informatics"
 ---
 
 ```{r,echo=FALSE,include=FALSE, warning=FALSE}
 #  variables
-rep_org <- "Data Science Platform" 
-rep_core3 <- "Alberto Pallejà Caro"
-rep_core_email3 <- "apca@biosustain.dtu.dk"
-rep_core2 <- "Andres Sebastian Ayala Ruano"
-rep_core_email2 <- "asaru@dtu.dk"
+rep_org <- "Data Science Platform"
+rep_core4 <- "Albert Pallejà Caro"
+rep_core_email4 <- "apca@dtu.dk"
+rep_core3 <- "Alexander Zubov"
+rep_core_email3 <- "alzub@dtu.dk"
+rep_core2 <- "Edir Sebastian Vidal Casto"
+rep_core_email2 <- "s243564@student.dtu.dk"
 rep_core <- "Juliana Assis"
 rep_core_email <- "jasge@dtu.dk"
 
 # Combine all responsibles into a single string
 rep_all <- paste0(
+  rep_core4, " (", rep_core_email4, ")<br>",
   rep_core3, " (", rep_core_email3, ")<br>",
   rep_core2, " (", rep_core_email2, ")<br>",
   rep_core, " (", rep_core_email, ")"
@@ -52,7 +55,7 @@ __Responsibles:__ `r paste0(rep_all," ")`
 
 
 This markdown is to calculate the **alpha diversity** of the **samples** as **Richness** (number of species detected per sample) 
-and as **Shannon diversity index** (accounts for number of species detected). 
+and as **Shannon diversity index** (accounts for number of species detected and abundance distribution). 
 These calculations are based on the species abundance table. Here we will plot Richness and Shannon index,
 and we will compare these diversity metrics between the study groups.
 
@@ -100,7 +103,6 @@ library(ggplot2)
 library(patchwork)
 library(vegan)
 library(FSA)
-#library(plotly)
 ```
 
 # Load data objects
@@ -108,19 +110,18 @@ library(FSA)
 **Load species abundance, taxonomical annotation and metadata file**
 
 ```{r, warning=FALSE}
-abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
+abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = "data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
 
 # Metadata
-metadata <- read.table(file = "data/metadata.tsv", header = TRUE,
+metadata <- read.table(file = "../data/metadata.tsv", header = TRUE,
                        sep = "\t",
                        quote = "",
                        row.names = NULL)
 rownames(metadata) <- metadata$Sample
-
 
 ```
 
@@ -144,7 +145,7 @@ abundance <- abundance[rownames(metadata), ]
 ## Creating a directory for the related results
 
 ```{r, warning=FALSE}
-results_dir <- "results/report/01_Alpha-diversity"
+results_dir <- "../results/report/01_Alpha-diversity"
 
 dir.create(results_dir, 
            recursive = TRUE, 
@@ -192,7 +193,8 @@ plot_data <- cbind(alpha_div,
 colnames(plot_data) <-
   c("Richness", "Shannon", "Area", "Sampling_Date", "Area_Sampling")
 
-write.csv(plot_data, file = "results/report/01_Alpha-diversity/01_Alpha_diversity.csv",
+write.csv(plot_data, 
+          file = "../results/report/01_Alpha-diversity/01_Alpha_diversity.csv",
           row.names = TRUE, 
           quote = FALSE)
 ```
@@ -268,41 +270,10 @@ richness_boxplot +
 ### Save
 
 ```{r, warning=FALSE}
-ggsave(filename = "results/report/01_Alpha-diversity/02_alphadiv_boxplots.png",
+ggsave(filename = "../results/report/01_Alpha-diversity/02_alphadiv_boxplots.png",
        width = 8, 
        height = 4, 
        dpi = 300)
-```
-
-
-<div class="extra">
-  <strong>💡 Extra:</strong> You can try to make interactive plots.
-</div>
-
-
-```{r, eval=FALSE}
-# Your ggplot boxplot
-shannon_boxplot <- ggplot(plot_data, 
-                          aes(x = Sampling_Date, 
-                              y = Shannon)) +
-  geom_boxplot(aes(fill = Area_Sampling), 
-               outlier.shape = NA, # hide outliers manually
-               alpha = 0.7) +
-  geom_point(aes(fill = Area_Sampling), 
-             shape = 21,
-             position = position_jitter(width = 0.25, height = 0)) +
-  theme_bw() +
-  theme(legend.position = "none", 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) +
-  scale_fill_manual(values = colors) +
-  labs(x = "Sampling", 
-       y = "Shannon index") +
-  facet_grid(. ~ Area)
-
-# Make it interactive
-ggplotly(shannon_boxplot)
-
 ```
 
 # Statistical comparison
@@ -322,13 +293,18 @@ kruskal.test(Richness ~ Area,
 
 ::: boxy
 When a Kruskal-Wallis test shows that there are significant differences 
-between groups, you need a post-hoc test to determine which specific groups differ. Since Kruskal-Wallis is non-parametric, the appropriate post-hoc  test is also a non-parametric - dunnTest. We correct for multiple testing using Benjamini-Hochberg (BH) procedure, which is a method used to control the False Discovery Rate (FDR) in multiple hypothesis testing
+between groups, you need a post-hoc test to determine which specific groups differ. 
+Since Kruskal-Wallis is non-parametric, the appropriate post-hoc  test is also 
+a non-parametric - dunnTest. We correct for multiple testing using Benjamini-Hochberg 
+(BH) procedure, which is a method used to control the False Discovery Rate (FDR) 
+in multiple hypothesis testing
 :::
 
 
 ✅ Post-hoc Dunn’s Test — Hypothesis Explanation
 
-Dunn’s test is a non-parametric post-hoc test used after a Kruskal-Wallis test, to determine which specific groups are significantly different from each other.
+Dunn’s test is a non-parametric post-hoc test used after a Kruskal-Wallis test, 
+to determine which specific groups are significantly different from each other.
 
 💡 Why Dunn’s Test?
 
@@ -411,6 +387,7 @@ sessionInfo()
 <!-- --------------------- Do not edit this and below ---------------------- -->
 
 </br>
+
 
 ```{r,child="assets/_footer-lab.Rmd"}
 ```

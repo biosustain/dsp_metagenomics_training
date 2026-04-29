@@ -66,5 +66,6 @@ course_contents/Vuegen_report
 
 tutorial/01_Alpha-diversity_tutorial
 tutorial/02_Beta-diversity_tutorial
+tutorial/03_Abundance-overview_tutorial
 ```
 

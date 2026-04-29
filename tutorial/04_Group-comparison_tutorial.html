@@ -1,0 +1,884 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Group comparison tutorial &#8212; Metagenomics course, Data Science Platform (DSP)  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial/04_Group-comparison_tutorial';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Abundace overview tutorial" href="03_Abundance-overview_tutorial.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Metagenomics course, Data Science Platform (DSP)  documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/biosustain/dsp_metagenomics_training" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Course information</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../course_information/Instructions.html">Instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_information/Location.html">Location</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_information/Timing.html">Timing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Course contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../course_contents/Contents.html">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_contents/Data_processing.html">Metagenomics data processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../course_contents/Vuegen_report.html">Reporting with VueGen</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_Alpha-diversity_tutorial.html">Alpha Diversity Tutorial</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="02_Beta-diversity_tutorial.html">Beta diversity tutorial</a></li>
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="03_Abundance-overview_tutorial.html">Abundace overview tutorial</a></li>
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Group comparison tutorial</a></li>
+
+
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/biosustain/dsp_metagenomics_training" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/biosustain/dsp_metagenomics_training/edit/main/tutorial/04_Group-comparison_tutorial.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorial/04_Group-comparison_tutorial.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Group comparison tutorial</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Group comparison tutorial</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#r-packages-that-need-to-be-installed">R Packages that need to be installed</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data-objects">Load data objects</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-directory-for-the-related-results">Creating a directory for the related results</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#areas-comparison">Areas comparison</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kruskal-wallis-test">🧪 Kruskal-Wallis Test</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-testing-correction">Multiple testing correction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-dunns-test-for-significant-taxa">Run Dunn’s test for significant taxa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-print-the-statistics-results">Let’s print the statistics results</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-the-top-20-significant-species">Plotting the top-20 significant species</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-long-format-data-with-top-taxa">Prepare long-format data with top taxa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#order-taxa-by-significance-and-fix-data-types">Order taxa by significance and fix data-types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-heatmap-with-ggplot2">Plot heatmap with ggplot2</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility">Printing all package versions (good practice to ensure reproducibility)</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <br>
+<p><strong>Organisation:</strong> Data Science Platform<br />
+<strong>Responsibles:</strong> Albert Pallejà Caro (<a class="reference external" href="mailto:apca&#37;&#52;&#48;dtu&#46;dk" rel="noreferrer" target="_blank">apca<span>&#64;</span>dtu<span>&#46;</span>dk</a>)<br>Alexander Zubov
+(<a class="reference external" href="mailto:alzub&#37;&#52;&#48;dtu&#46;dk" rel="noreferrer" target="_blank">alzub<span>&#64;</span>dtu<span>&#46;</span>dk</a>)<br>Edir Sebastian Vidal Casto
+(<a class="reference external" href="mailto:s243564&#37;&#52;&#48;student&#46;dtu&#46;dk" rel="noreferrer" target="_blank">s243564<span>&#64;</span>student<span>&#46;</span>dtu<span>&#46;</span>dk</a>)<br>Juliana Assis (<a class="reference external" href="mailto:jasge&#37;&#52;&#48;dtu&#46;dk" rel="noreferrer" target="_blank">jasge<span>&#64;</span>dtu<span>&#46;</span>dk</a>)</p>
+<br>
+<!-- ----------------------- Do not edit above this ----------------------- -->
+<section class="tex2jax_ignore mathjax_ignore" id="group-comparison-tutorial">
+<h1>Group comparison tutorial<a class="headerlink" href="#group-comparison-tutorial" title="Link to this heading">#</a></h1>
+<p>This markdown is to perform a group comparison of the species abundance
+among the three areas studied in the dataset.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="r-packages-that-need-to-be-installed">
+<h1>R Packages that need to be installed<a class="headerlink" href="#r-packages-that-need-to-be-installed" title="Link to this heading">#</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(FSA)
+</pre></div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="load-data-objects">
+<h1>Load data objects<a class="headerlink" href="#load-data-objects" title="Link to this heading">#</a></h1>
+<p><strong>Load species abundance, taxonomical annotation and metadata file</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Abundance table
+abundance &lt;- readRDS(file = &quot;../data/MetaphlanAbundance_Species.rds&quot;)
+rownames(abundance) &lt;- gsub(&quot;_SRR_db1.metaphlan&quot;, &quot;&quot;, rownames(abundance))
+
+# Taxonomical annotation
+annotation &lt;- readRDS(file = &quot;../data/MetaphlanAnnotations_Species.rds&quot;)
+
+# Metadata
+metadata &lt;- read.table(file = &quot;../data/metadata.tsv&quot;,
+                       header = TRUE, sep = &quot;\t&quot;,
+                       quote = &quot;&quot;,
+                       row.names = NULL)
+rownames(metadata) &lt;- metadata$Sample
+
+# Take only samples with sequencing and metadata information
+abundance &lt;- abundance[rownames(metadata),]
+</pre></div>
+</div>
+<section id="creating-a-directory-for-the-related-results">
+<h2>Creating a directory for the related results<a class="headerlink" href="#creating-a-directory-for-the-related-results" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>results_dir &lt;- &quot;../results/report/04_Group-comparison&quot;
+
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+</pre></div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="areas-comparison">
+<h1>Areas comparison<a class="headerlink" href="#areas-comparison" title="Link to this heading">#</a></h1>
+<p>As there are three areas, we will use a non-parametric test (not
+assuming any distribution) for three groups: Kruskal-Wallis test. We
+need to run this test for all species comparing among Areas (1, 2, 3),
+therefore we need to code a loop to run the test for all species and
+later we need to correct for multiple testing (Bonferroni-Hochberg). For
+the significant ones we will run a pot-hoc dunnTest to figure out
+between which groups the differences exist.</p>
+<section id="kruskal-wallis-test">
+<h2>🧪 Kruskal-Wallis Test<a class="headerlink" href="#kruskal-wallis-test" title="Link to this heading">#</a></h2>
+<p>The Kruskal-Wallis test is a non-parametric method used to determine if
+there are statistically significant differences in the abundance of taxa
+across different groups (e.g. treatments, timepoints, compartments).</p>
+<hr class="docutils" />
+<p><strong>🔗 Step 0: Merge Abundance Data with Metadata</strong></p>
+<p>Before performing the test, make sure your <strong>abundance table</strong> and
+<strong>metadata</strong> are merged appropriately so each sample has its associated
+group information.</p>
+<hr class="docutils" />
+<p><strong>🔍 Step 1: Prevalence Filtering</strong></p>
+<p>Microbiome abundance tables are often sparse. To reduce noise from rare
+taxa (e.g., species found in only one or two samples), we apply a
+<strong>prevalence filter</strong>.</p>
+<p>We will <strong>keep only taxa that are present (non-zero abundance) in at
+least 20% of the samples</strong>.</p>
+<p><strong>Step 2: Kruskal–Wallis test for each taxon</strong></p>
+<ul class="simple">
+<li><p>An elegant way to run loops in R is using one of its “apply”
+functions</p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance_df &lt;- as.data.frame(cbind(abundance,
+                                    Area = metadata$Area,
+                                    Sample = metadata$Sample))
+
+taxa_cols &lt;- setdiff(colnames(abundance_df), 
+                     c(&quot;Sample&quot;, 
+                       &quot;Area&quot;))
+
+n_samples &lt;- nrow(abundance_df)
+
+min_prevalence &lt;- 0.20 * n_samples
+
+
+abundance_taxa_only &lt;- abundance_df[, taxa_cols]
+
+prevalent_taxa &lt;- sapply(abundance_taxa_only[, taxa_cols],
+                         function(x) sum(x &gt; 0)) &gt;= min_prevalence
+
+filtered_taxa &lt;- names(prevalent_taxa[prevalent_taxa])
+</pre></div>
+</div>
+<p><strong>❓ Question:</strong> How many species passed the filter?</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>kruskal_results &lt;- lapply(filtered_taxa, 
+                          function(taxon) {
+                            
+  test_data &lt;- abundance_df[, c(taxon,&quot;Area&quot;)]
+  colnames(test_data) &lt;- c(&quot;Abundance&quot;,&quot;Area&quot;)
+  kruskal &lt;- kruskal.test(Abundance ~ Area, 
+                          data = test_data)
+  data.frame(
+    Taxon = taxon,
+    p_value = kruskal$p.value,
+    statistic = kruskal$statistic
+  )
+})
+
+kruskal_df &lt;- do.call(rbind, 
+                      kruskal_results)
+rownames(kruskal_df) &lt;- kruskal_df$Taxon
+</pre></div>
+</div>
+</section>
+<section id="multiple-testing-correction">
+<h2>Multiple testing correction<a class="headerlink" href="#multiple-testing-correction" title="Link to this heading">#</a></h2>
+<p>Adjusting for multiple testing by Bonferroni and Hochberg method (False
+Discovery rate)</p>
+<p><strong>Filter significant taxa (e.g., FDR &lt; 0.05)</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>kruskal_df$adj_p_value &lt;- p.adjust(kruskal_df$p_value, 
+                                   method = &quot;BH&quot;)
+
+significant_taxa &lt;- kruskal_df %&gt;% 
+  filter(adj_p_value &lt; 0.05)
+
+significant_taxa$Species_name &lt;-
+  annotation$species[match(rownames(significant_taxa),
+                           rownames(annotation))]
+
+## PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
+</pre></div>
+</div>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2ccdc0c3827cb648b1e4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2ccdc0c3827cb648b1e4">{"x":{"filter":"none","vertical":false,"extensions":["Buttons","Scroller"],"data":[["Tax_001","Tax_002","Tax_003","Tax_004","Tax_007","Tax_008","Tax_009","Tax_012","Tax_013","Tax_014","Tax_015","Tax_017","Tax_018","Tax_019","Tax_020","Tax_021","Tax_025","Tax_026","Tax_028","Tax_031","Tax_033","Tax_035","Tax_039","Tax_040","Tax_041","Tax_042","Tax_049","Tax_051","Tax_056","Tax_062","Tax_064","Tax_065","Tax_068","Tax_069","Tax_073","Tax_078","Tax_079","Tax_084","Tax_088","Tax_089","Tax_090","Tax_094","Tax_102","Tax_104","Tax_112","Tax_114","Tax_115","Tax_116","Tax_117","Tax_121","Tax_122","Tax_123","Tax_124","Tax_125","Tax_127","Tax_128","Tax_129","Tax_130","Tax_131","Tax_132","Tax_134","Tax_137","Tax_138","Tax_140","Tax_142","Tax_143","Tax_144","Tax_145","Tax_146","Tax_152","Tax_155","Tax_156","Tax_157","Tax_158","Tax_164","Tax_218"],[0.00236047207682683,0.001795783163180331,0.001189062956702195,0.01304238357213175,0.008625145810799633,0.02860994686363269,0.000435649609078136,0.001144008166961277,0.003783807572158446,0.008542975485177075,0.002063359727320817,0.02134974830292509,0.003541595692097822,0.0008864653218738476,0.0003145329653270274,0.002429487506696455,0.00521992069527082,0.01582695736921896,0.007602323493544669,0.003095586852365237,0.001189062956702195,0.0003145329653270274,0.001879472756266823,0.003783807572158446,0.008542975485177075,0.0005980143180049425,0.01199960728556935,0.009288280049936336,0.001795783163180331,0.008542975485177075,0.0003145329653270274,0.02142178927649674,0.01397938414848257,0.01093567337367365,0.004075319025246142,0.001255196883598468,0.008542975485177075,0.01446672905114548,0.001795783163180331,0.02125426947674803,0.00886478050265151,0.006987591100235797,0.02188774564831946,0.009934216737169781,0.006677704409770795,0.01050374010474571,0.0008864653218738476,0.0003145329653270274,0.0003145329653270274,0.01081698554012736,0.01961831489292864,0.0003145329653270274,0.001318402159440754,0.001795783163180331,0.0003145329653270274,0.02272130389980352,0.000821418682546011,0.008542975485177075,0.001570984057125606,0.002479855560657353,0.003771771236374461,0.0003145329653270274,0.0003145329653270274,0.0005980143180049425,0.02272130389980352,0.009748937103648337,0.008072317673242509,0.008542975485177075,0.001795783163180331,0.0003145329653270274,0.008542975485177075,0.001795783163180331,0.008542975485177075,0.02872859648867831,0.0005980143180049425,0.008542975485177075],[12.09778729478944,12.64462809917355,13.46917942677659,8.679101899827293,9.506146821215308,7.10800165837478,15.47734457323499,13.5464344941957,11.15404896421846,9.525291828793776,12.36683937823834,7.69343065693431,11.28635578583766,14.05653710247349,16.12884333821376,12.04014989293362,10.5105461393597,8.292081260364839,9.75860271115746,11.55555555555556,13.46917942677659,16.12884333821376,12.55352798053528,11.15404896421846,9.525291828793776,14.84379172229639,8.84576271186441,9.358003766478344,12.64462809917355,9.525291828793776,16.12884333821376,7.686693368936357,8.540343190945602,9.031450094161967,11.00561249389945,13.36092567868268,9.525291828793776,8.471807628524047,12.64462809917355,7.70239497447978,9.451338199513378,9.927238805970157,7.643656716417913,9.223540489642183,10.01796200345423,9.112047769582015,14.05653710247349,16.12884333821376,16.12884333821376,9.05327529021559,7.862583431488013,16.12884333821376,13.26266952177016,12.64462809917355,16.12884333821376,7.568904593639572,14.20895522388059,9.525291828793776,12.91210613598674,11.99910992434356,11.16042112776588,16.12884333821376,16.12884333821376,14.84379172229639,7.568904593639572,9.261194029850753,9.638629283489095,9.525291828793776,12.64462809917355,16.12884333821376,9.525291828793776,12.64462809917355,9.525291828793776,7.099724517906334,14.84379172229639,9.525291828793776],[0.009481800673101644,0.008050062455635965,0.007728909218564268,0.02649234163089263,0.02038670828007186,0.04914102030958132,0.005148586289105244,0.007728909218564268,0.01261269190719482,0.02038670828007186,0.00865279885650665,0.03922299444992361,0.01261269190719482,0.006778852461388246,0.004088928549251357,0.009481800673101644,0.01655096805817577,0.03070902176117111,0.02038670828007186,0.01149789402307088,0.007728909218564268,0.004088928549251357,0.008144381943822901,0.01261269190719482,0.02038670828007186,0.005552990095760181,0.02476109439879389,0.02118379660511796,0.008050062455635965,0.02038670828007186,0.004088928549251357,0.03922299444992361,0.02795876829696515,0.02292963771899314,0.01324478683204996,0.007770266422276232,0.02038670828007186,0.02849507237346836,0.008050062455635965,0.03922299444992361,0.02057895473829815,0.02038670828007186,0.03951954075391013,0.02188895213274697,0.02038670828007186,0.02275810356028237,0.006778852461388246,0.004088928549251357,0.004088928549251357,0.02292963771899314,0.0375056020011871,0.004088928549251357,0.007790558214877182,0.008050062455635965,0.004088928549251357,0.03991580414830349,0.006778852461388246,0.02038670828007186,0.008050062455635965,0.009481800673101644,0.01261269190719482,0.004088928549251357,0.004088928549251357,0.005552990095760181,0.03991580414830349,0.02185106592197041,0.02038670828007186,0.02038670828007186,0.008050062455635965,0.004088928549251357,0.02038670828007186,0.008050062455635965,0.02038670828007186,0.04914102030958132,0.005552990095760181,0.02038670828007186],["Alterinioella nitratireducens","Erythrobacter litoralis","GGB91539 SGB134165","Salinigranum rubrum","Marinobacter sp_B9_2","Halogranum gelatinilyticum","GGB26358 SGB38443","Halobellus litoreus","Coleofasciculus chthonoplastes","GGB66348 SGB89905","Roseovarius tolerans","Salinirubrum litoreum","Ectothiorhodospiraceae bacterium_WFHF3C12","GGB63892 SGB86271","Rhodohalobacter sp_WB101","Halapricum salinum","Marinobacter persicus","Marinobacter sp_Arc7_DN_1","Haloplanus rubicundus","Halorubrum depositum","Cribrihabitans marinus","Muricauda aquimarina","Marinobacter halotolerans","Salinigranum halophilum","Halohasta SGB85995","GGB8058 SGB11996","Roseovarius nitratireducens","Phaeobacter sp_JL2872","Halohasta litorea","Halohasta sp_GSL13","Wenzhouxiangella sp_XN24","Halorubrum terrestre","Halonotius terrestris","Natronomonas sp_CBA1123","Gracilimonas sp_CAU_1638","Halorubrum salsamenti","Spiribacter sp_E85","Thiohalophilus thiocyanatoxydans","GGB98463 SGB138837","Halobellus limi","Haloglomus sp_ZY58","Aliifodinibius sp_WN023","Halogeometricum rufum","Natronomonas sp_ZY43","Haloplanus aerogenes","Halorientalis marina","Halomicroarcula rubra","Halolamina sediminis","Halobaculum saliterrae","Halapricum sp_CBA1109","Halorubrum sp_CBA1229","Natronomonas halophila","Marinobacter daqiaonensis","Halorubrum trapanicum","Halolamina rubra","Halobellus ruber","Halorubrum sp_BV1","Halostella salina","Halobellus salinus","Pseudosulfitobacter sp_AP_MA_4","Haloglomus sp_ZY41","Halolamina pelagica","Halorientalis litorea","Halolamina sp_CBA1230","Haloplanus salinus","Aliifodinibius roseus","Halorussus litoreus","Halorubrum sp_Ea1","Halolamina salifodinae","Natronomonas sp_F2_12","Pseudidiomarina salinarum","Halorubellus SGB86030","Halobaculum magnesiiphilum","Natronomonas gomsonensis","Maribius pelagius","Muricauda sp_ARW1Y1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Taxon<\/th>\n      <th>p_value<\/th>\n      <th>statistic<\/th>\n      <th>adj_p_value<\/th>\n      <th>Species_name<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Bfrtip","buttons":["copy","csv"],"deferRender":true,"scrollX":true,"scrollY":200,"scroller":true,"caption":"Sample metadata","columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"Taxon","targets":0},{"name":"p_value","targets":1},{"name":"statistic","targets":2},{"name":"adj_p_value","targets":3},{"name":"Species_name","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</section>
+<section id="run-dunns-test-for-significant-taxa">
+<h2>Run Dunn’s test for significant taxa<a class="headerlink" href="#run-dunns-test-for-significant-taxa" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dunn_results &lt;- lapply(significant_taxa$Taxon, 
+                       function(taxon) {
+                         
+  test_data &lt;- abundance_df[, c(taxon, &quot;Area&quot;)]
+  colnames(test_data) &lt;- c(&quot;Abundance&quot;, &quot;Area&quot;)
+  test_data$Abundance &lt;- as.numeric(test_data$Abundance)
+
+  # Run dunnTest only if we have &gt;1 group with non-zero data
+  tryCatch({
+    dunn &lt;- dunnTest(Abundance ~ Area, 
+                     data = test_data, 
+                     method = &quot;bh&quot;)
+    
+    dunn_df &lt;- dunn$res
+    
+    dunn_df$Taxon &lt;- taxon
+    
+    return(dunn_df)
+  }, error = function(e) {
+    message(paste(&quot;Skipping&quot;, 
+                  taxon, &quot;due to error:&quot;, e$message))
+  })
+})
+
+# Combine Dunn test results
+dunn_df &lt;- do.call(rbind, dunn_results)
+dunn_df$Species_name &lt;-
+  annotation$species[match(dunn_df$Taxon,
+                           rownames(annotation))]
+</pre></div>
+</div>
+</section>
+<section id="lets-print-the-statistics-results">
+<h2>Let’s print the statistics results<a class="headerlink" href="#lets-print-the-statistics-results" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Let’s save the statistics for Kruskal-Wallis test</p></li>
+<li><p>ordered by adj_p_value and with more logical order of the columns</p></li>
+</ul>
+<!-- -->
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>significant_taxa &lt;- significant_taxa %&gt;%
+  arrange(adj_p_value) %&gt;%
+  relocate(Taxon, 
+           Species_name, 
+           statistic, 
+           p_value, 
+           adj_p_value)
+
+write.csv(significant_taxa,
+    file = &quot;../results/report/04_Group-comparison/01_kruskal-wallis-results.csv&quot;,
+    row.names = TRUE, quote = FALSE)
+
+write.csv(dunn_df,
+  file = &quot;../results/report/04_Group-comparison/02_post-hoc-dunn-results.csv&quot;,
+  row.names = TRUE, quote = FALSE)
+</pre></div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="plotting-the-top-20-significant-species">
+<h1>Plotting the top-20 significant species<a class="headerlink" href="#plotting-the-top-20-significant-species" title="Link to this heading">#</a></h1>
+<p><strong>Get top 20 taxa from Kruskal–Wallis</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>top_taxa &lt;- kruskal_df %&gt;%
+  arrange(adj_p_value) %&gt;%
+  slice(1:20) %&gt;%
+  pull(Taxon)
+</pre></div>
+</div>
+<section id="prepare-long-format-data-with-top-taxa">
+<h2>Prepare long-format data with top taxa<a class="headerlink" href="#prepare-long-format-data-with-top-taxa" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance_df$Sampling &lt;- metadata$Sampling
+abundance_long &lt;- abundance_df %&gt;%
+  select(Sample, 
+         Area, 
+         Sampling, 
+         all_of(top_taxa)) %&gt;%
+  pivot_longer(
+    cols = all_of(top_taxa),
+    names_to = &quot;Taxon&quot;,
+    values_to = &quot;Abundance&quot;
+    ) 
+</pre></div>
+</div>
+</section>
+<section id="order-taxa-by-significance-and-fix-data-types">
+<h2>Order taxa by significance and fix data-types<a class="headerlink" href="#order-taxa-by-significance-and-fix-data-types" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>abundance_long$Abundance &lt;- as.numeric(abundance_long$Abundance)
+abundance_long$Species_name &lt;-
+  annotation$species[match(abundance_long$Taxon,
+                           rownames(annotation))]
+
+abundance_long$Species_name &lt;- factor(abundance_long$Species_name, 
+                    levels = unique(abundance_long$Species_name))
+</pre></div>
+</div>
+</section>
+<section id="plot-heatmap-with-ggplot2">
+<h2>Plot heatmap with ggplot2<a class="headerlink" href="#plot-heatmap-with-ggplot2" title="Link to this heading">#</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>heatmap_top20 &lt;- ggplot(abundance_long, 
+                        aes(x = Sample, 
+                            y = Species_name,
+                        fill = log10(Abundance+0.000001))) +
+  
+  geom_tile(color = &quot;white&quot;, 
+            size = 0.2) +
+  
+  scale_fill_viridis_c(option = &quot;B&quot;, 
+                       name = &quot;Abundance\n(log10)&quot;) +
+  
+  facet_grid(. ~ Area + Sampling, 
+             scales = &quot;free&quot;) +
+  
+  theme_bw() +
+  
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid = element_blank(),
+    strip.text = element_text(face = &quot;bold&quot;),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_blank()
+  )
+
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
+
+heatmap_top20
+</pre></div>
+</div>
+<p><img alt="" src="../_images/unnamed-chunk-12-1.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Save it as a png
+ggsave(&quot;../results/report/04_Group-comparison/04_significants_heatmap.png&quot;,
+       width = 8, height = 8, dpi = 300)
+</pre></div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="printing-all-package-versions-good-practice-to-ensure-reproducibility">
+<h1>Printing all package versions (good practice to ensure reproducibility)<a class="headerlink" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility" title="Link to this heading">#</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>## R version 4.3.1 (2023-06-16)
+## Platform: aarch64-apple-darwin20 (64-bit)
+## Running under: macOS 26.3.1
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+## 
+## locale:
+## [1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+## 
+## time zone: Europe/Copenhagen
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] FSA_0.10.0         RColorBrewer_1.1-3 tidyr_1.3.1        dplyr_1.1.4       
+## [5] ggplot2_3.5.1     
+## 
+## loaded via a namespace (and not attached):
+##  [1] jsonlite_1.8.9    gtable_0.3.6      crayon_1.5.3      compiler_4.3.1   
+##  [5] webshot_0.5.5     tidyselect_1.2.1  jquerylib_0.1.4   textshaping_0.4.0
+##  [9] systemfonts_1.1.0 scales_1.3.0      yaml_2.3.10       fastmap_1.2.0    
+## [13] R6_2.5.1          labeling_0.4.3    generics_0.1.3    knitr_1.49       
+## [17] htmlwidgets_1.6.4 tibble_3.2.1      munsell_0.5.1     bslib_0.8.0      
+## [21] pillar_1.9.0      rlang_1.1.4       utf8_1.2.4        DT_0.33          
+## [25] cachem_1.1.0      xfun_0.49         sass_0.4.9        viridisLite_0.4.2
+## [29] cli_3.6.3         withr_3.0.2       magrittr_2.0.3    crosstalk_1.2.1  
+## [33] digest_0.6.37     grid_4.3.1        lifecycle_1.0.4   vctrs_0.6.5      
+## [37] evaluate_1.0.1    glue_1.8.0        farver_2.1.2      ragg_1.3.3       
+## [41] dunn.test_1.3.6   fansi_1.0.6       colorspace_2.1-1  rmarkdown_2.29   
+## [45] purrr_1.0.4       tools_4.3.1       pkgconfig_2.0.3   htmltools_0.5.8.1
+</pre></div>
+</div>
+<!-- --------------------- Do not edit this and below ---------------------- -->
+</br>
+<footer class="footer">
+<div class="footer-container">
+<div class="row">
+<hr>
+<p class="small" style="color:#bdbdbd;">
+<b>2026</b> • [Data Science
+Platform](https://bright.dtu.dk/technologies/biofoundry/informatics) •
+[BRIGHT](https://bright.dtu.dk/)
+</p>
+<p style="color:#bdbdbd;">
+<span class="footericon" style="padding-right:4px; padding-left:4px">
+<a href="https://www.biosustain.dtu.dk/technologies/biofoundry/informatics"></a>
+</span> <span class="footericon"
+style="padding-right:4px; padding-left:4px">
+<a href="https://x.com/dtubiosustain"></a> </span>
+<span class="footericon" style="padding-left:4px">
+<a href="https://www.linkedin.com/company/brightdtu/"></a> </span>
+</p>
+</div>
+</div>
+</footer>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="03_Abundance-overview_tutorial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Abundace overview tutorial</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Group comparison tutorial</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#r-packages-that-need-to-be-installed">R Packages that need to be installed</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data-objects">Load data objects</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-directory-for-the-related-results">Creating a directory for the related results</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#areas-comparison">Areas comparison</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kruskal-wallis-test">🧪 Kruskal-Wallis Test</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-testing-correction">Multiple testing correction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-dunns-test-for-significant-taxa">Run Dunn’s test for significant taxa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-print-the-statistics-results">Let’s print the statistics results</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-the-top-20-significant-species">Plotting the top-20 significant species</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-long-format-data-with-top-taxa">Prepare long-format data with top taxa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#order-taxa-by-significance-and-fix-data-types">Order taxa by significance and fix data-types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-heatmap-with-ggplot2">Plot heatmap with ggplot2</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-all-package-versions-good-practice-to-ensure-reproducibility">Printing all package versions (good practice to ensure reproducibility)</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Albert Palleja
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, DTU Biosustain, Informatics Platform, DSP.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

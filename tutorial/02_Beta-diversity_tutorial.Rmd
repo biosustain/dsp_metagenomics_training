@@ -19,21 +19,24 @@ output:
     css: "assets/report.css"
     includes:
       in_header: "assets/copy-button.html"
-    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
+    staff_web: "https://bright.dtu.dk/technologies/biofoundry/informatics"
 ---
 
 ```{r,echo=FALSE,include=FALSE}
 #  variables
-rep_org <- "Data Science Platform" 
-rep_core3 <- "Alberto Pallejà Caro"
-rep_core_email3 <- "apca@biosustain.dtu.dk"
-rep_core2 <- "Andres Sebastian Ayala Ruano"
-rep_core_email2 <- "asaru@dtu.dk"
+rep_org <- "Data Science Platform"
+rep_core4 <- "Albert Pallejà Caro"
+rep_core_email4 <- "apca@dtu.dk"
+rep_core3 <- "Alexander Zubov"
+rep_core_email3 <- "alzub@dtu.dk"
+rep_core2 <- "Edir Sebastian Vidal Casto"
+rep_core_email2 <- "s243564@student.dtu.dk"
 rep_core <- "Juliana Assis"
 rep_core_email <- "jasge@dtu.dk"
 
 # Combine all responsibles into a single string
 rep_all <- paste0(
+  rep_core4, " (", rep_core_email4, ")<br>",
   rep_core3, " (", rep_core_email3, ")<br>",
   rep_core2, " (", rep_core_email2, ")<br>",
   rep_core, " (", rep_core_email, ")"
@@ -93,12 +96,13 @@ To **visualize** the dissimilarity between samples, we use **Principal Coordinat
 - **Step 1**: Compute **Bray-Curtis dissimilarity** between all sample pairs.
 - **Step 2**: Perform **PCoA** on the distance matrix.
 - **Output**: A 2D scatter plot where:
-  - Each point = a sample.
-  - Distance between points = ecological dissimilarity.
+  - Each symbol = a sample.
+  - Distance between symbols = ecological dissimilarity.
 
 ---
 :::
 
+# Beta diversity tutorial
 
 # R Packages that need to be installed
 
@@ -114,14 +118,14 @@ library(vegan)
 
 ```{r}
 # Abundance table
-abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
+abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = "data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
 
 # Metadata
-metadata <- read.table(file = "data/metadata.tsv",
+metadata <- read.table(file = "../data/metadata.tsv",
                        header = TRUE, sep = "\t",
                        quote = "",
                        row.names = NULL)
@@ -133,7 +137,7 @@ abundance <- abundance[rownames(metadata), ]
 
 # Creating a directory for the PCoA related results
 ```{r}
-results_dir <- "results/report/02_Beta-diversity"
+results_dir <- "../results/report/02_Beta-diversity"
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
@@ -153,10 +157,9 @@ bray_curtis <- vegdist(abundance,
 
 - **bray_curtis:** a dissimilarity matrix (often from vegdist() in vegan).
 
-
 - **eig** = TRUE: store eigenvalues, which indicate how much variation is explained by each axis.
 
-- **k = 2:** return 2 dimensions, typically the top 2 axe
+- **k = 2:** return 2 dimensions, typically the top 2 axis
 
 ```{r}
 pcoa_result <- cmdscale(bray_curtis, 
@@ -188,7 +191,7 @@ colnames(scores) <- c("Axis1", "Axis2", "Area", "Sampling")
 ### Extract loading data
 
 To calculate variable loadings (contributions of the original variables 
-to the PCoA axes), you can use the envfit() function in the vegan package. Fit environmental vectors to the ordination
+to the PCoA axis), you can use the envfit() function in the vegan package. Fit environmental vectors to the ordination
 
 
 - **envfit()** fits abundance data (e.g., species) onto the ordination.
@@ -262,7 +265,7 @@ p <- ggplot(scores,
 p
 
 # Save it as a png
-ggsave("results/report/02_Beta-diversity/01_PCoA_plot.png",
+ggsave("../results/report/02_Beta-diversity/01_PCoA_plot.png",
        width = 8, height = 6, dpi = 300)
 ```
 
@@ -313,70 +316,14 @@ p <- ggplot(scores,
        y = paste0("Axis2 ", 
                   axis_variance[2], "%"),
        title = "PCoA with variable loadings",
-       subtitle = "r >= 0.75, 
-       P <= 0.05")
+       subtitle = "r >= 0.75, P <= 0.05")
 p
 
 # Save it as a png
-ggsave("results/report/02_Beta-diversity/02_PCoA_with_loadings.png",
+ggsave("../results/report/02_Beta-diversity/02_PCoA_with_loadings.png",
        width = 8, height = 6, dpi = 300)
 ```
 
-
-<div class="extra">
-  <strong>💡 Extra:</strong> You can try to make interactive plots.
-</div>
-
-```{r, eval=FALSE}
-library(plotly)
-
-# Your original ggplot
-p <- ggplot(scores, 
-            aes(x = Axis1, 
-                y = Axis2)) +
-  
-  geom_point(aes(color = Area, 
-                 fill = Area, 
-                 shape = Sampling, 
-                 text = paste("Area:", Area, "<br>Sampling:", Sampling)), 
-             size = 2) +
-
-  # Vector arrows as segments (arrowhead won't appear in plotly)
-  geom_segment(data = loadings_df,
-               aes(x = 0, 
-                   y = 0, 
-                   xend = Axis1, 
-                   yend = Axis2),
-               color = "grey",
-               linewidth = 0.5) +
-
-  # Species labels
-  geom_text(data = loadings_df, 
-            aes(x = Axis1, 
-                y = Axis2,
-                label = annotation$species[match(rownames(loadings_df),
-                                                 rownames(annotation))]),
-            vjust = -0.5,
-            hjust = 0.5,
-            color = "red",
-            size = 3) +
-
-  scale_color_manual(values = colors) +
-  scale_fill_manual(values = colors) +
-  scale_shape_manual(values = shapes) +
-
-  theme_bw() +
-  theme(aspect.ratio = 1) +
-
-  labs(x = paste0("Axis1 ", axis_variance[1], "%"),
-       y = paste0("Axis2 ", axis_variance[2], "%"),
-       title = "PCoA with variable loadings",
-       subtitle = "r ≥ 0.75, P ≤ 0.05")
-
-# Make it interactive
-ggplotly(p, tooltip = "text")
-
-```
 
 
 # Permutational multivariate analysis of variance (PERMANOVA)
@@ -448,7 +395,7 @@ dispersion_box <- ggplot(dispersion_plot_data, aes(x = group,
 dispersion_box
 
 # Save it as a png
-ggsave("results/report/02_Beta-diversity/03_dispersion_plot.png",
+ggsave("../results/report/02_Beta-diversity/03_dispersion_plot.png",
        width = 6, height = 4, dpi = 300)
 ```
 
@@ -501,7 +448,7 @@ dispersion_box <- ggplot(dispersion_plot_data,
 dispersion_box
 
 # Save it as a png
-ggsave("results/report/02_Beta-diversity/04_dispersion_plot_sampling.png",
+ggsave("../results/report/02_Beta-diversity/04_dispersion_plot_sampling.png",
        width = 5, height = 4, dpi = 300)
 ```
 
@@ -515,12 +462,7 @@ with caution, and you should consider additional analyses.
 
 
 **Differences among treatment groups**
-
-- TODO: complain if not at least color group OR shape group is given
-- With all data
-- Both factors: area and sampling data significantly explain the compositional 
-- variance among the samples. These results should be interpreted with caution 
-- as there is significant differences in dispersion among the groups.
+- Can compositional differences among groups be explained by the area and sampling date?
 
 ```{r}
 set.seed(12)
@@ -539,9 +481,13 @@ adonis_table <- adonis2(form,
                         by = "margin")
 
 write.csv(adonis_table,
-          file = "results/report/02_Beta-diversity/05_Adonis_table.csv",
+          file = "../results/report/02_Beta-diversity/05_Adonis_table.csv",
           row.names = TRUE, quote = FALSE)
 ```
+
+- Both factors: area and sampling data significantly explain the compositional 
+- variance among the samples. These results should be interpreted with caution 
+- as there is significant differences in dispersion among the groups.
 
 # Printing all package versions (good practice to ensure reproducibility)
 
@@ -550,28 +496,6 @@ write.csv(adonis_table,
 sessionInfo()
 ```
 
-<div class="tip">
-  <strong>💡 Tip:</strong> You can plot all shapes in R ggplot.
-</div>
-
-```{r}
-# Create a data frame with all shape values from 0 to 25
-shapes_df <- data.frame(
-  shape = 0:25,
-  x = rep(1:6, length.out = 26),
-  y = rep(5:1, each = 6)[1:26]
-)
-
-# Plot all shapes
-ggplot(shapes_df, aes(x = x, y = y)) +
-  geom_point(aes(shape = factor(shape)), size = 4, fill = "blue", color = "black") +
-  geom_text(aes(label = shape), vjust = -1) +
-  scale_shape_manual(values = 0:25) +
-  theme_void() +
-  ggtitle("Available ggplot2 Shape Values (0–25)") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-```
 
 <!-- --------------------- Do not edit this and below ---------------------- -->
 
@@ -582,7 +506,7 @@ ggplot(shapes_df, aes(x = x, y = y)) +
 
 ```{r,eval=FALSE,echo=FALSE}
 # manually run this to render this document to HTML
-rmarkdown::render("BetaDiversity.Rmd")
+rmarkdown::render("02_Beta-diversity_tutorial.Rmd")
 # then run this to convert HTML to PDF (if needed)
 #pagedown::chrome_print("core-report.html",output="core-report.pdf")
 ```

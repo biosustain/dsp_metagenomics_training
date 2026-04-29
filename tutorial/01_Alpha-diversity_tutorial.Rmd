@@ -396,7 +396,7 @@ sessionInfo()
 
 ```{r,eval=FALSE,echo=FALSE}
 # manually run this to render this document to HTML
-rmarkdown::render("AlphaDiversity.Rmd")
+rmarkdown::render("01_Alpha-diversity_tutorial.Rmd")
 # then run this to convert HTML to PDF (if needed)
 #pagedown::chrome_print("core-report.html",output="core-report.pdf")
 ```

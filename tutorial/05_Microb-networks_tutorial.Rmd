@@ -19,21 +19,25 @@ output:
     css: "assets/report.css"
     includes:
       in_header: "assets/copy-button.html"
-    staff_web: "https://www.biosustain.dtu.dk/technologies/informatics/data-science-platform"
+    staff_web: "https://bright.dtu.dk/technologies/biofoundry/informatics"
+always_allow_html: true
 ---
 
 ```{r,echo=FALSE,include=FALSE}
 #  variables
-rep_org <- "Data Science Platform" 
-rep_core3 <- "Alberto Pallejà Caro"
-rep_core_email3 <- "apca@biosustain.dtu.dk"
-rep_core2 <- "Sebastian Ayala Ruano"
-rep_core_email2 <- "asaru@dtu.dk"
+rep_org <- "Data Science Platform"
+rep_core4 <- "Albert Pallejà Caro"
+rep_core_email4 <- "apca@dtu.dk"
+rep_core3 <- "Alexander Zubov"
+rep_core_email3 <- "alzub@dtu.dk"
+rep_core2 <- "Edir Sebastian Vidal Casto"
+rep_core_email2 <- "s243564@student.dtu.dk"
 rep_core <- "Juliana Assis"
 rep_core_email <- "jasge@dtu.dk"
 
 # Combine all responsibles into a single string
 rep_all <- paste0(
+  rep_core4, " (", rep_core_email4, ")<br>",
   rep_core3, " (", rep_core_email3, ")<br>",
   rep_core2, " (", rep_core_email2, ")<br>",
   rep_core, " (", rep_core_email, ")"
@@ -51,6 +55,8 @@ __Responsibles:__ `r paste0(rep_all," ")`
 
 
 <!-- ----------------------- Do not edit above this ----------------------- -->
+
+# Microbial association networks tutorial
 
 This markdown is to create microbial association networks (MANs) based on the abundance data using [pearson correlation](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) 
 as association measure.
@@ -70,16 +76,16 @@ library(dplyr)
 ## Load data
 ```{r, warning=FALSE}
 # Abundance table
-abundance <- readRDS(file = "data/MetaphlanAbundance_Species.rds")
+abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 dim(abundance)
 
 # Taxonomical annotation
-annotation <- readRDS(file = "data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
 dim(annotation)
 
 # Metadata
-metadata <- read.table(file = "data/metadata.tsv",
+metadata <- read.table(file = "../data/metadata.tsv",
                        header = TRUE, sep = "\t",
                        quote = "",
                        row.names = NULL)
@@ -94,7 +100,7 @@ dim(abundance)
 ## Create a directory to store the results
 
 ```{r, warning=FALSE}
-results_dir <- "results/report/05_Microbial-association-networks"
+results_dir <- "../results/report/05_Microbial-association-networks"
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
@@ -340,7 +346,8 @@ net_viz <- plot(
 )
 
 # Open and close PNG device
-png(file.path(results_dir, "5_pearson_network_igraph_plot.png"), width = 2500, height = 2300, res = 150)
+png(file.path(results_dir, "5_pearson_network_igraph_plot.png"), 
+    width = 2500, height = 2300, res = 150)
 dev.off()
 ```
 
@@ -365,7 +372,7 @@ to demonstrate how to use this package using the same dataset from this course.
 
 ```{r,eval=FALSE,echo=FALSE}
 # manually run this to render this document to HTML
-rmarkdown::render("Group-Comparison.Rmd")
+rmarkdown::render("05_Microbial-association-networks.Rmd")
 # then run this to convert HTML to PDF (if needed)
 #pagedown::chrome_print("core-report.html",output="core-report.pdf")
 ```

@@ -67,6 +67,8 @@ library(dplyr)
 library(tidyr)
 library(RColorBrewer)
 library(FSA)
+
+TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
 ```
 
 # Load data objects
@@ -75,15 +77,15 @@ library(FSA)
 
 ```{r}
 # Abundance table
-abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+abundance <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAbundance_Species.rds"))
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAnnotations_Species.rds"))
 
 # Metadata
-metadata <- read.table(file = "../data/metadata.tsv",
-                       header = TRUE, sep = "\t",
+metadata <- read.table(file = paste0(TRAINING_DIR, "data/metadata.tsv"), header = TRUE,
+                       sep = "\t",
                        quote = "",
                        row.names = NULL)
 rownames(metadata) <- metadata$Sample
@@ -95,7 +97,7 @@ abundance <- abundance[rownames(metadata),]
 ## Creating a directory for the related results
 
 ```{r}
-results_dir <- "../results/report/04_Group-comparison"
+results_dir <- paste0(TRAINING_DIR, "results/report/04_Group-comparison")
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
@@ -107,7 +109,7 @@ As there are three areas, we will use a non-parametric test
 (not assuming any distribution) for three groups: Kruskal-Wallis test.
 We need to run this test for all species comparing among Areas (1, 2, 3),
 therefore we need to code a loop to run the test for all species and 
-later we need to correct for multiple testing (Bonferroni-Hochberg). 
+later we need to correct for multiple testing (Benjamini-Hochberg). 
 For the significant ones we will run a pot-hoc dunnTest to figure out 
 between which groups the differences exist.
 :::
@@ -186,7 +188,7 @@ rownames(kruskal_df) <- kruskal_df$Taxon
 
 ## Multiple testing correction
 
-Adjusting for multiple testing by Bonferroni and Hochberg 
+Adjusting for multiple testing by Benjamini and Hochberg 
 method (False Discovery rate)
 
 

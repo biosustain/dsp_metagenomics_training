@@ -110,6 +110,8 @@ To **visualize** the dissimilarity between samples, we use **Principal Coordinat
 library(dplyr)
 library(ggplot2)
 library(vegan)
+
+TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
 ```
 
 # Load data objects
@@ -118,15 +120,15 @@ library(vegan)
 
 ```{r}
 # Abundance table
-abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+abundance <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAbundance_Species.rds"))
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAnnotations_Species.rds"))
 
 # Metadata
-metadata <- read.table(file = "../data/metadata.tsv",
-                       header = TRUE, sep = "\t",
+metadata <- read.table(file = paste0(TRAINING_DIR, "data/metadata.tsv"), header = TRUE,
+                       sep = "\t",
                        quote = "",
                        row.names = NULL)
 rownames(metadata) <- metadata$Sample
@@ -137,7 +139,7 @@ abundance <- abundance[rownames(metadata), ]
 
 # Creating a directory for the PCoA related results
 ```{r}
-results_dir <- "../results/report/02_Beta-diversity"
+results_dir <- paste0(TRAINING_DIR, "results/report/02_Beta-diversity/")
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```
@@ -265,7 +267,7 @@ p <- ggplot(scores,
 p
 
 # Save it as a png
-ggsave("../results/report/02_Beta-diversity/01_PCoA_plot.png",
+ggsave(paste0(results_dir, "01_PCoA_plot.png"),
        width = 8, height = 6, dpi = 300)
 ```
 
@@ -320,7 +322,7 @@ p <- ggplot(scores,
 p
 
 # Save it as a png
-ggsave("../results/report/02_Beta-diversity/02_PCoA_with_loadings.png",
+ggsave(paste0(results_dir, "02_PCoA_with_loadings.png"),
        width = 8, height = 6, dpi = 300)
 ```
 
@@ -395,7 +397,7 @@ dispersion_box <- ggplot(dispersion_plot_data, aes(x = group,
 dispersion_box
 
 # Save it as a png
-ggsave("../results/report/02_Beta-diversity/03_dispersion_plot.png",
+ggsave(paste0(results_dir, "03_dispersion_plot.png"),
        width = 6, height = 4, dpi = 300)
 ```
 
@@ -448,7 +450,7 @@ dispersion_box <- ggplot(dispersion_plot_data,
 dispersion_box
 
 # Save it as a png
-ggsave("../results/report/02_Beta-diversity/04_dispersion_plot_sampling.png",
+ggsave(paste0(results_dir, "04_dispersion_plot_sampling.png"),
        width = 5, height = 4, dpi = 300)
 ```
 
@@ -481,7 +483,7 @@ adonis_table <- adonis2(form,
                         by = "margin")
 
 write.csv(adonis_table,
-          file = "../results/report/02_Beta-diversity/05_Adonis_table.csv",
+          file = paste0(results_dir, "05_Adonis_table.csv"),
           row.names = TRUE, quote = FALSE)
 ```
 

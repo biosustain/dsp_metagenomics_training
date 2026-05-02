@@ -114,13 +114,17 @@ therefore we need to code a loop to run the test for all species and
 later we need to correct for multiple testing (Benjamini-Hochberg). 
 For the significant ones we will run a pot-hoc dunnTest to figure out 
 between which groups the differences exist.
+
+Kruskal-Wallis followed by Dunn’s test is considered the non-parametric 
+analogue to the One-Way ANOVA followed by a Post-Hoc Test (such as Tukey's 
+HSD or pairwise t-tests)
 :::
 
 ## 🧪 Kruskal-Wallis Test
 
 The Kruskal-Wallis test is a non-parametric method used to determine if there are statistically 
-significant differences in the abundance of taxa across different groups 
-(e.g. treatments, timepoints, compartments).
+significant differences in the abundance of taxa across different groups (> 2 groups)
+(e.g. > 2 treatments, > 2 timepoints).
 
 ---
 
@@ -209,6 +213,7 @@ significant_taxa$Species_name <-
 ```
 
 
+## Our significant taxa shown by datatable
 ```{r sample_Load, echo=FALSE, include=TRUE, eval=TRUE}
 DT::datatable(data = significant_taxa, 
               rownames = FALSE, 
@@ -273,12 +278,12 @@ significant_taxa <- significant_taxa %>%
            adj_p_value)
 
 write.csv(significant_taxa,
-    file = "../results/report/04_Group-comparison/01_kruskal-wallis-results.csv",
-    row.names = TRUE, quote = FALSE)
+          file = paste0(results_dir, "01_kruskal-wallis-results.csv"),
+          row.names = TRUE, quote = FALSE)
 
 write.csv(dunn_df,
-  file = "../results/report/04_Group-comparison/02_post-hoc-dunn-results.csv",
-  row.names = TRUE, quote = FALSE)
+          file = paste0(results_dir, "02_post-hoc-dunn-results.csv"),
+          row.names = TRUE, quote = FALSE)
 ```
 
 # Plotting the top-20 significant species
@@ -308,7 +313,7 @@ abundance_long <- abundance_df %>%
     ) 
 ```
 
-## Order taxa by significance and fix data-types
+## Fix data-types and add annotation
 
 ```{r}
 abundance_long$Abundance <- as.numeric(abundance_long$Abundance)
@@ -352,7 +357,7 @@ heatmap_top20 <- ggplot(abundance_long,
 heatmap_top20
 
 # Save it as a png
-ggsave("../results/report/04_Group-comparison/04_significants_heatmap.png",
+ggsave(paste0(results_dir, "04_significants_heatmap.png"),
        width = 8, height = 8, dpi = 300)
 ```
 

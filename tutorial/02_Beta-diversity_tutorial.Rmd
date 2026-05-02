@@ -484,6 +484,8 @@ adonis_table <- adonis2(form,
                         permutations = 1000,
                         by = "margin")
 
+adonis_table
+
 write.csv(adonis_table,
           file = paste0(results_dir, "05_Adonis_table.csv"),
           row.names = TRUE, quote = FALSE)

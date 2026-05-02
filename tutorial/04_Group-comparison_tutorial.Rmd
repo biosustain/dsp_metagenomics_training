@@ -67,13 +67,15 @@ library(dplyr)
 library(tidyr)
 library(RColorBrewer)
 library(FSA)
-
-TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
 ```
 
 # Load data objects
 
 **Load species abundance, taxonomical annotation and metadata file**
+
+```{r}
+TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
+```
 
 ```{r}
 # Abundance table

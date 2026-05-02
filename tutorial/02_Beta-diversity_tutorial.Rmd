@@ -110,13 +110,15 @@ To **visualize** the dissimilarity between samples, we use **Principal Coordinat
 library(dplyr)
 library(ggplot2)
 library(vegan)
-
-TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
 ```
 
 # Load data objects
 
 **Load species abundance, taxonomical annotation and metadata file**
+
+```{r}
+TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
+
 
 ```{r}
 # Abundance table

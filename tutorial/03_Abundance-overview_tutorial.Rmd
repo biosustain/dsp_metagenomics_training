@@ -72,19 +72,19 @@ library(RColorBrewer)
 **Load species abundance, taxonomical annotation and metadata file**
 
 ```{r}
-TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
+training_dir <- "/workspaces/dsp_metagenomics_training/"
 ```
 
 ```{r}
 # Abundance table
-abundance <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAbundance_Species.rds"))
+abundance <- readRDS(file = paste0(training_dir, "data/MetaphlanAbundance_Species.rds"))
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAnnotations_Species.rds"))
+annotation <- readRDS(file = paste0(training_dir, "data/MetaphlanAnnotations_Species.rds"))
 
 # Metadata
-metadata <- read.table(file = paste0(TRAINING_DIR, "data/metadata.tsv"), header = TRUE,
+metadata <- read.table(file = paste0(training_dir, "data/metadata.tsv"), header = TRUE,
                        sep = "\t",
                        quote = "",
                        row.names = NULL)
@@ -103,7 +103,7 @@ abundance <- abundance[rownames(abundance) %in%
 ## Creating a directory for the related results
 
 ```{r}
-results_dir <- paste0(TRAINING_DIR, "results/report/03_Abundance-overview/")
+results_dir <- paste0(training_dir, "results/report/03_Abundance-overview/")
 
 dir.create(results_dir, 
            recursive = TRUE, 

@@ -105,13 +105,15 @@ library(ggplot2)
 library(patchwork)
 library(vegan)
 library(FSA)
-
-TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
 ```
 
 # Load data objects
 
 **Load species abundance, taxonomical annotation and metadata file**
+
+```{r, warning=FALSE}
+TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
+```
 
 ```{r, warning=FALSE}
 abundance <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAbundance_Species.rds"))

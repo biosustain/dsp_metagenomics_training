@@ -71,11 +71,14 @@ library(igraph)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
-
-TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
 ```
 
 ## Load data
+
+```{r}
+TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
+```
+
 ```{r, warning=FALSE}
 # Abundance table
 abundance <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAbundance_Species.rds"))

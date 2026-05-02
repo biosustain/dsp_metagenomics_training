@@ -112,19 +112,22 @@ library(FSA)
 **Load species abundance, taxonomical annotation and metadata file**
 
 ```{r, warning=FALSE}
-abundance <- readRDS(file = "../data/MetaphlanAbundance_Species.rds")
+TRAINING_DIR <- "/workspaces/dsp_metagenomics_training/"
+```
+
+```{r, warning=FALSE}
+abundance <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAbundance_Species.rds"))
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = "../data/MetaphlanAnnotations_Species.rds")
+annotation <- readRDS(file = paste0(TRAINING_DIR, "data/MetaphlanAnnotations_Species.rds"))
 
 # Metadata
-metadata <- read.table(file = "../data/metadata.tsv", header = TRUE,
+metadata <- read.table(file = paste0(TRAINING_DIR, "data/metadata.tsv"), header = TRUE,
                        sep = "\t",
                        quote = "",
                        row.names = NULL)
 rownames(metadata) <- metadata$Sample
-
 ```
 
 
@@ -147,7 +150,7 @@ abundance <- abundance[rownames(metadata), ]
 ## Creating a directory for the related results
 
 ```{r, warning=FALSE}
-results_dir <- "../results/report/01_Alpha-diversity"
+results_dir <- paste0(TRAINING_DIR, "results/report/01_Alpha-diversity/")
 
 dir.create(results_dir, 
            recursive = TRUE, 
@@ -196,7 +199,7 @@ colnames(plot_data) <-
   c("Richness", "Shannon", "Area", "Sampling_Date", "Area_Sampling")
 
 write.csv(plot_data, 
-          file = "../results/report/01_Alpha-diversity/01_Alpha_diversity.csv",
+          file = paste0(results_dir, "02_Alpha_diversity.csv"),
           row.names = TRUE, 
           quote = FALSE)
 ```
@@ -214,7 +217,8 @@ richness_boxplot <- ggplot(plot_data,
                                y = Richness)) +
   
   geom_boxplot(aes(fill = Area_Sampling), 
-               outliers = FALSE, 
+               #outliers = FALSE,
+               outlier.shape = NA,
                alpha = 0.7) +
   
   geom_point(aes(fill = Area_Sampling), 
@@ -245,7 +249,8 @@ shannon_boxplot <- ggplot(plot_data,
                               y = Shannon)) +
   
   geom_boxplot(aes(fill = Area_Sampling), 
-               outliers = FALSE, 
+               #outliers = FALSE,
+               outlier.shape = NA,
                alpha = 0.7) +
   
   geom_point(aes(fill = Area_Sampling), 
@@ -272,7 +277,7 @@ richness_boxplot +
 ### Save
 
 ```{r, warning=FALSE}
-ggsave(filename = "../results/report/01_Alpha-diversity/02_alphadiv_boxplots.png",
+ggsave(filename = paste0(results_dir, "01_alphadiv_boxplots.png"),
        width = 8, 
        height = 4, 
        dpi = 300)
@@ -340,7 +345,7 @@ kruskal.test(Shannon ~ Area,
 
 **Almost significant!**
 
-When it is not significant, we don't needed to test between groups, but lets double check:
+When it is not significant, we don't need to test between groups, but lets double check:
 
 ```{r, warning=FALSE}
 dunnTest(Shannon ~ Area, 

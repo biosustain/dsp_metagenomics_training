@@ -5,6 +5,8 @@ _build
 results/
 # Ignore some temporary files
 course_contents/~$IntroMetagenomics.pptx
+course_contents/~$DataProcessing_taxprofiler.pptx
+
 # Ignore R environment and history
 RMarkdowns/.RData
 RMarkdowns/.Rhistory

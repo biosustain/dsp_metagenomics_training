@@ -103,7 +103,7 @@ abundance <- abundance[rownames(metadata), ]
 ## Creating a directory for the related results
 
 ```{r}
-results_dir <- paste0(training_dir, "results/report/04_Group-comparison")
+results_dir <- paste0(training_dir, "results/report/04_Group-comparison/")
 
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 ```

@@ -79,21 +79,25 @@ training_dir <- "/workspaces/dsp_metagenomics_training/"
 
 ```{r}
 # Abundance table
-abundance <- readRDS(file = paste0(training_dir, "data/MetaphlanAbundance_Species.rds"))
+abundance <- readRDS(file = paste0(training_dir,
+                                   "data/MetaphlanAbundance_Species.rds"))
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = paste0(training_dir, "data/MetaphlanAnnotations_Species.rds"))
+annotation <- readRDS(file = paste0(training_dir,
+                                    "data/MetaphlanAnnotations_Species.rds"))
 
 # Metadata
-metadata <- read.table(file = paste0(training_dir, "data/metadata.tsv"), header = TRUE,
+metadata <- read.table(file = paste0(training_dir,
+                                     "data/metadata.tsv"),
+                       header = TRUE,
                        sep = "\t",
                        quote = "",
                        row.names = NULL)
 rownames(metadata) <- metadata$Sample
 
 # Take only samples with sequencing and metadata information
-abundance <- abundance[rownames(metadata),]
+abundance <- abundance[rownames(metadata), ]
 ```
 
 ## Creating a directory for the related results
@@ -187,7 +191,7 @@ kruskal_results <- lapply(filtered_taxa,
   )
 })
 
-kruskal_df <- do.call(rbind, 
+kruskal_df <- do.call(rbind,
                       kruskal_results)
 rownames(kruskal_df) <- kruskal_df$Taxon
 ```
@@ -204,7 +208,7 @@ method (False Discovery rate)
 kruskal_df$adj_p_value <- p.adjust(kruskal_df$p_value, 
                                    method = "BH")
 
-significant_taxa <- kruskal_df %>% 
+significant_taxa <- kruskal_df %>%
   filter(adj_p_value < 0.05)
 
 significant_taxa$Species_name <-
@@ -231,26 +235,22 @@ DT::datatable(data = significant_taxa,
 ## Run Dunn’s test for significant taxa
 
 ```{r, warning=FALSE}
-dunn_results <- lapply(significant_taxa$Taxon, 
+dunn_results <- lapply(significant_taxa$Taxon,
                        function(taxon) {
-                         
-  test_data <- abundance_df[, c(taxon, "Area")]
-  colnames(test_data) <- c("Abundance", "Area")
-  test_data$Abundance <- as.numeric(test_data$Abundance)
+                         test_data <- abundance_df[, c(taxon, "Area")]
+                         colnames(test_data) <- c("Abundance", "Area")
+                         test_data$Abundance <- as.numeric(test_data$Abundance)
 
   # Run dunnTest only if we have >1 group with non-zero data
   tryCatch({
     dunn <- dunnTest(Abundance ~ Area, 
                      data = test_data, 
                      method = "bh")
-    
     dunn_df <- dunn$res
-    
     dunn_df$Taxon <- taxon
-    
     return(dunn_df)
   }, error = function(e) {
-    message(paste("Skipping", 
+    message(paste("Skipping",
                   taxon, "due to error:", e$message))
   })
 })
@@ -302,15 +302,15 @@ top_taxa <- kruskal_df %>%
 ```{r}
 abundance_df$Sampling <- metadata$Sampling
 abundance_long <- abundance_df %>%
-  select(Sample, 
-         Area, 
-         Sampling, 
+  select(Sample,
+         Area,
+         Sampling,
          all_of(top_taxa)) %>%
   pivot_longer(
     cols = all_of(top_taxa),
     names_to = "Taxon",
     values_to = "Abundance"
-    ) 
+  )
 ```
 
 ## Fix data-types and add annotation
@@ -321,30 +321,25 @@ abundance_long$Species_name <-
   annotation$species[match(abundance_long$Taxon,
                            rownames(annotation))]
 
-abundance_long$Species_name <- factor(abundance_long$Species_name, 
-                    levels = unique(abundance_long$Species_name))
+abundance_long$Species_name <- factor(abundance_long$Species_name,
+                            levels = unique(abundance_long$Species_name))
 
 ```
 
 ## Plot heatmap with ggplot2
 
 ```{r}
-heatmap_top20 <- ggplot(abundance_long, 
-                        aes(x = Sample, 
+heatmap_top20 <- ggplot(abundance_long,
+                        aes(x = Sample,
                             y = Species_name,
-                        fill = log10(Abundance+0.000001))) +
-  
-  geom_tile(color = "white", 
+                            fill = log10(Abundance + 0.000001))) +
+  geom_tile(color = "white",
             size = 0.2) +
-  
-  scale_fill_viridis_c(option = "B", 
+  scale_fill_viridis_c(option = "B",
                        name = "Abundance\n(log10)") +
-  
-  facet_grid(. ~ Area + Sampling, 
+  facet_grid(. ~ Area + Sampling,
              scales = "free") +
-  
   theme_bw() +
-  
   theme(
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
@@ -360,8 +355,6 @@ heatmap_top20
 ggsave(paste0(results_dir, "04_significants_heatmap.png"),
        width = 8, height = 8, dpi = 300)
 ```
-
-
 
 # Printing all package versions (good practice to ensure reproducibility)
 ```{r session-info, echo=FALSE}

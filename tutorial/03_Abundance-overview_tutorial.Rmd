@@ -77,14 +77,18 @@ training_dir <- "/workspaces/dsp_metagenomics_training/"
 
 ```{r}
 # Abundance table
-abundance <- readRDS(file = paste0(training_dir, "data/MetaphlanAbundance_Species.rds"))
+abundance <- readRDS(file = paste0(training_dir,
+                                   "data/MetaphlanAbundance_Species.rds"))
 rownames(abundance) <- gsub("_SRR_db1.metaphlan", "", rownames(abundance))
 
 # Taxonomical annotation
-annotation <- readRDS(file = paste0(training_dir, "data/MetaphlanAnnotations_Species.rds"))
+annotation <- readRDS(file = paste0(training_dir,
+                                    "data/MetaphlanAnnotations_Species.rds"))
 
 # Metadata
-metadata <- read.table(file = paste0(training_dir, "data/metadata.tsv"), header = TRUE,
+metadata <- read.table(file = paste0(training_dir,
+                                     "data/metadata.tsv"),
+                       header = TRUE,
                        sep = "\t",
                        quote = "",
                        row.names = NULL)
@@ -95,8 +99,8 @@ rownames(metadata) <- metadata$Sample
 ## Take only samples with sequencing and metadata information
 
 ```{r}
-abundance <- abundance[rownames(abundance) %in% 
-                         rownames(metadata),]
+abundance <- abundance[rownames(abundance) %in%
+                         rownames(metadata), ]
 ```
 
 
@@ -105,8 +109,8 @@ abundance <- abundance[rownames(abundance) %in%
 ```{r}
 results_dir <- paste0(training_dir, "results/report/03_Abundance-overview/")
 
-dir.create(results_dir, 
-           recursive = TRUE, 
+dir.create(results_dir,
+           recursive = TRUE,
            showWarnings = FALSE)
 ```
 
@@ -115,14 +119,14 @@ dir.create(results_dir,
 ```{r}
 taxa_total <- colSums(abundance)
 
-top_taxa <- names(sort(taxa_total, 
+top_taxa <- names(sort(taxa_total,
                        decreasing = TRUE))[1:10]
 ```
 
 ## Filter to top 10 taxa
 
 ```{r}
-abundance_top10 <- as.data.frame(abundance) %>% 
+abundance_top10 <- as.data.frame(abundance) %>%
   select(all_of(top_taxa))
 ```
 
@@ -142,13 +146,13 @@ abundance_long <- abundance_top10 %>%
                values_to = "Abundance")
 
 abundance_long$Species_name <- annotation$species[match(abundance_long$Species,
-                                                  rownames(annotation))]
+                                                        rownames(annotation))]
 
 abundance_long$Area <- metadata$Area[match(abundance_long$Sample,
                                            metadata$Sample)]
 
 abundance_long$Sampling <- metadata$Sampling[match(abundance_long$Sample,
-                                               metadata$Sample)]
+                                                   metadata$Sample)]
 ```
 
 ## Stack bar plot of the top-10 most dominant species
@@ -167,33 +171,25 @@ abundance_long$Sampling <- metadata$Sampling[match(abundance_long$Sample,
 ```{r}
 abundance_long <- abundance_long %>%
   arrange(Sampling, Sample) %>%
-  mutate(Sample = factor(Sample, 
+  mutate(Sample = factor(Sample,
                          levels = unique(Sample)))
 
-pbar <- ggplot(abundance_long, aes(x = Sample, 
+pbar <- ggplot(abundance_long, aes(x = Sample,
                                    y = Abundance,
                                    fill = Species_name)) +
-  
   geom_bar(stat = "identity", 
            position = "stack", 
            show.legend = TRUE) +
-  
   scale_fill_brewer(palette = "Paired") +
-  
   labs(title = "Top-10 Most Abundant Species",
        x = "Sample",
        y = "Relative Abundance (%)") +
-  
   theme_bw() +
-  
-  theme(axis.text.x = element_text(angle = 45, 
+  theme(axis.text.x = element_text(angle = 45,
                                    hjust = 1)) +
-  
   scale_y_continuous(expand = c(0, 0)) +
-  
   scale_x_discrete(expand = c(0, 0)) +
-  
-  facet_wrap(. ~ Area, 
+  facet_wrap(. ~ Area,
              scales = "free")
 
 pbar
@@ -223,32 +219,27 @@ abundance_long <- abundance_top10 %>%
 
 abundance_summary <- abundance_long %>%
   group_by(Area, Sampling, Species) %>%
-  summarise(MeanAbundance = mean(Abundance), 
+  summarise(MeanAbundance = mean(Abundance),
             .groups = "drop") #ungroup
 
-abundance_summary$Species_name <- 
+abundance_summary$Species_name <-
   annotation$species[match(abundance_summary$Species,
                            rownames(annotation))]
 
-pbar_sum <- ggplot(abundance_summary, 
-                   aes(x = interaction(Area, 
-                                       Sampling, 
+pbar_sum <- ggplot(abundance_summary,
+                   aes(x = interaction(Area,
+                                       Sampling,
                                        sep = " | "),
-                       y = MeanAbundance, 
+                       y = MeanAbundance,
                        fill = Species_name)) +
-  
-  geom_bar(stat = "identity", 
-           position = "stack", 
+  geom_bar(stat = "identity",
+           position = "stack",
            show.legend = TRUE) +
-  
   scale_fill_brewer(palette = "Paired") +
-  
   theme_bw() +
-  
   labs(title = "Mean Abundance of Top 10 Taxa by Area and Sampling",
        x = "Area | Sampling",
        y = "Mean Relative Abundance (%)") +
-  
   theme(axis.text.x = element_text(hjust = 0.5),
         strip.text = element_text(face = "bold")) +
   scale_y_continuous(expand = c(0, 0)) +
@@ -257,8 +248,8 @@ pbar_sum <- ggplot(abundance_summary,
 pbar_sum
 
 # Save it as a png
-ggsave(paste0(results_dir, "02_top10_species_per_area_sampling.png"), 
-        width = 8, height = 6, dpi = 300)
+ggsave(paste0(results_dir, "02_top10_species_per_area_sampling.png"),
+       width = 8, height = 6, dpi = 300)
 
 ```
 

@@ -130,7 +130,7 @@ cat("Number of zero entries BEFORE replacement:", num_zeros_before, "\n")
 
 # Replace only zeros with a pseudocount
 abund_pseudo <- abundance
-abund_pseudo[abund_pseudo == 0] <- 1
+abund_pseudo[abund_pseudo == 0] <- 1e-4
 
 # Count zeros after replacement (should be 0)
 num_zeros_after <- sum(abund_pseudo == 0)
@@ -337,8 +337,12 @@ vertex_size <- rescale_base(log1p(deg), target_range = c(1.5, 3.5))
 edge_weights <- abs(E(graph)$weight)
 edge_width <- rescale_base(edge_weights, target_range = c(0.3, 2))
 
+# Open and close PNG device
+png(file.path(results_dir, "5_pearson_network_igraph_plot.png"), 
+    width = 2500, height = 2300, res = 150)
+
 # Plot the network
-net_viz <- plot(
+plot(
   graph,
   vertex.size = vertex_size,
   vertex.color = clusters_vec,
@@ -351,9 +355,6 @@ net_viz <- plot(
   main = "Pearson Microbial Association Network"
 )
 
-# Open and close PNG device
-png(file.path(results_dir, "5_pearson_network_igraph_plot.png"), 
-    width = 2500, height = 2300, res = 150)
 dev.off()
 ```
 
